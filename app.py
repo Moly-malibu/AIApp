@@ -149,22 +149,15 @@ def Home():
         ---
         """)
         today = st.date_input('Today is', datetime.datetime.now())
-        def get_base64(bin_file):
-            with open(bin_file, 'rb') as f:
-                data = r.read()
-            return base64.b64decode(data).decode()
-        def set_png(png_file):
-            bin_str = get_base64(png_file)
-            page_bg_img = '''
-            <style>
-            .stApp {
-                background-image url("https://images.pexels.com/photos/1024613/pexels-photo-1024613.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=1000");
-                background-size: cover;
-            }
-            </style>
-            '''
-            st.markdown(page_bg_img, unsafe_allow_html=True)
-            return
+        page_bg_img = '''
+        <style>
+        .stApp {
+        background-image url("https://images.pexels.com/photos/259132/pexels-photo-259132.jpeg?cs=srgb&dl=pexels-pixabay-259132.jpg&fm=jpg");
+        background-size: cover;
+        }
+        </style>
+        '''
+        st.markdown(page_bg_img, unsafe_allow_html=True)
         footer_temp1 = """
             <!-- CSS  -->
             <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -220,7 +213,7 @@ title_temp = """
 	      <div class="row">
 	        <div class="col l6 s12">
                 <h4 class="black-text-dark">AI Internet of Things (IoT)-</h4>
-	          <h6 class="black-text">Stocks: Finances & Sto</h6>
+	          <h6 class="black-text">Forecasting</h6>
               <h6 class="Sklearn, Tensorflow,  Keras, Pandas Profile, Numpy, Math, Data Visualization. </h6>
 	        </div>     
 	  </footer>
@@ -280,7 +273,7 @@ def Portfolio():
     page_bg_img = '''
     <style>
     .stApp {
-    background-image: url("https://images.pexels.com/photos/2748756/pexels-photo-2748756.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=1000");
+    background-image: url("https://images.pexels.com/photos/1024613/pexels-photo-1024613.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=1000");
     background-size: cover;
     }
     </style>
@@ -524,7 +517,7 @@ def Statement():
     page_bg_img = '''
     <style>
     .stApp{
-    background-image: url("https://images.pexels.com/photos/2748757/pexels-photo-2748757.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=1000");
+    background-image: url("https://images.pexels.com/photos/950241/pexels-photo-950241.jpeg?cs=srgb&dl=pexels-gdtography-950241.jpg&fm=jpg");
     background-size: cover;
     }
     </style>
@@ -689,7 +682,7 @@ def Stock():
     page_bg_img = """
     <style>
     .stApp {
-    background-image: url("https://images.pexels.com/photos/1353938/pexels-photo-1353938.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=1000");
+    background-image: url("https://images.pexels.com/photos/911738/pexels-photo-911738.jpeg?cs=srgb&dl=pexels-gdtography-911738.jpg&fm=jpg");
     background-size: cover;
     }
     </style>
