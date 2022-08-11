@@ -88,6 +88,15 @@ def main():
 
 def Home():
     def main():
+        page_bg_img = '''
+        <style>
+        .stApp {
+        background-image: url("https://images.pexels.com/photos/1024613/pexels-photo-1024613.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=1000");
+        background-size: cover;
+        }
+        </style>
+        '''
+        st.markdown(page_bg_img, unsafe_allow_html=True)
         st.markdown("<h1 style='text-align: center; color: #002967;'>Finances and Stocks</h1>", unsafe_allow_html=True)
         st.markdown("<h1 style='text-align: center; color: #002967;'>App for Streamlines Decisions</h1>", unsafe_allow_html=True)
         st.write(
@@ -149,16 +158,9 @@ def Home():
         ---
         """)
         today = st.date_input('Today is', datetime.datetime.now())
-        page_bg_img = '''
-        <style>
-        .stApp {
-        background-image url("https://images.pexels.com/photos/259132/pexels-photo-259132.jpeg?cs=srgb&dl=pexels-pixabay-259132.jpg&fm=jpg");
-        background-size: cover;
-        }
-        </style>
-        '''
-        st.markdown(page_bg_img, unsafe_allow_html=True)
+
         footer_temp1 = """
+
             <!-- CSS  -->
             <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
             <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection"/>
@@ -226,7 +228,7 @@ def Index():
     page_bg_img = '''
     <style>
     .stApp {
-    background-image: url("https://images.pexels.com/photos/4194857/pexels-photo-4194857.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=1000");
+    background-image: url("https://img.freepik.com/free-photo/3d-geometric-abstract-cuboid-wallpaper-background_1048-9891.jpg?size=626&ext=jpg&ga=GA1.2.635976572.1603931911");
     background-size: cover;
     }
     </style>
