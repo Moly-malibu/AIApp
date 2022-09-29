@@ -234,7 +234,7 @@ def Index():
     </style>
     '''
     st.markdown(page_bg_img, unsafe_allow_html=True)
-    symbols = 'https://raw.githubusercontent.com/Moly-malibu/Stocks/main/bxo_lmmS1.csv'
+    symbols = 'https://raw.githubusercontent.com/Moly-malibu/AIApp/main/bxo_lmmS1.csv'
     df = pd.read_csv(symbols)
     st.markdown("<h1 style='text-align: center; color: #002967;'>Stock Price </h1>", unsafe_allow_html=True)
     start = st.sidebar.date_input("Enter Date Begin Analysis: ") 
@@ -281,7 +281,7 @@ def Portfolio():
     </style>
     '''
     st.markdown(page_bg_img, unsafe_allow_html=True)
-    symbols = 'https://raw.githubusercontent.com/Moly-malibu/Stocks/main/bxo_lmmS1.csv'
+    symbols = 'https://raw.githubusercontent.com/Moly-malibu/AIApp/main/bxo_lmmS1.csv'
     df = pd.read_csv(symbols)
     st.markdown("<h1 style='text-align: center; color: #002967;'>Portfolio</h1>", unsafe_allow_html=True)
     st.write(""" Make your ***own Portfolio*** with 5 companies and analyze what will be your profit.""")
@@ -357,7 +357,7 @@ def Prediction_model():
     </style>
     '''
     st.markdown(page_bg_img, unsafe_allow_html=True)
-    symbols = 'https://raw.githubusercontent.com/Moly-malibu/Stocks/main/bxo_lmmS1.csv'
+    symbols = 'https://raw.githubusercontent.com/Moly-malibu/AIApp/main/bxo_lmmS1.csv'
     df = pd.read_csv(symbols)
     # #Firs model to predict price and accuracy
     now = pd.datetime.now()
@@ -507,7 +507,7 @@ def Profit():
     '''
     st.markdown(page_bg_img, unsafe_allow_html=True)
     st.markdown("<h1 style='text-align: center; color: #002966;'>Profit</h1>", unsafe_allow_html=True)
-    symbols = 'https://raw.githubusercontent.com/Moly-malibu/Stocks/main/bxo_lmmS1.csv'
+    symbols = 'https://raw.githubusercontent.com/Moly-malibu/AIApp/main/bxo_lmmS1.csv'
     df = pd.read_csv(symbols)
     tickerSymbol = st.sidebar.selectbox('Company List', (df))
     company = yf.Ticker(tickerSymbol)
@@ -526,7 +526,7 @@ def Statement():
     '''
     st.markdown(page_bg_img, unsafe_allow_html=True)
     st.markdown("<h1 style='text-align: center; color: #002966;'>Statement</h1>", unsafe_allow_html=True)
-    symbols = 'https://raw.githubusercontent.com/Moly-malibu/Stocks/main/bxo_lmmS1.csv'
+    symbols = 'https://raw.githubusercontent.com/Moly-malibu/AIApp/main/bxo_lmmS1.csv'
     df = pd.read_csv(symbols)
     ticker = st.sidebar.selectbox('Stocks by Company', (df))
     tickerData = YahooFinancials(ticker)
@@ -690,7 +690,7 @@ def Stock():
     </style>
     """
     st.markdown(page_bg_img, unsafe_allow_html=True)
-    symbols = 'https://raw.githubusercontent.com/Moly-malibu/Stocks/main/bxo_lmmS1.csv'
+    symbols = 'https://raw.githubusercontent.com/Moly-malibu/AIApp/main/bxo_lmmS1.csv'
     df = pd.read_csv(symbols)
     st.markdown("<h1 style='text-align: center; color: #002966;'>Financial Information</h1>", unsafe_allow_html=True)
     st.write("""
