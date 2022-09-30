@@ -6,8 +6,8 @@ import pandas as pd
 
 #Index
 from numpy.lib.shape_base import column_stack
-# import matplotlib as mpl
-#import matplotlib.pyplot as plt
+import matplotlib as mpl
+import matplotlib.pyplot as plt
 from datetime import datetime
 import datetime
 import requests
@@ -24,7 +24,7 @@ import numpy as np
 import yfinance 
 import yfinance as yf 
 yf.pdr_override()
-#plt.style.use('fivethirtyeight')
+plt.style.use('fivethirtyeight')
 
 #Prediction
 import math
