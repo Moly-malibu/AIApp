@@ -7,7 +7,7 @@ import pandas as pd
 #Index
 from numpy.lib.shape_base import column_stack
 # import matplotlib as mpl
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 from datetime import datetime
 import datetime
 import requests
