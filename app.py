@@ -71,6 +71,12 @@ from pandas.core import groupby
 from requests.api import options 
 import os
 
+from streamlit.ReportThread import add_report_ctx
+
+thread = threading.Thread(target=...)
+add_report_ctx(thread)
+thread.start()
+
 def main():
     # Register pages
     pages = {
