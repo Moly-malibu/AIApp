@@ -24,7 +24,7 @@ import numpy as np
 import yfinance 
 import yfinance as yf 
 yf.pdr_override()
-plt.style.use('fivethirtyeight')
+#plt.style.use('fivethirtyeight')
 
 #Prediction
 import math
