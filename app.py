@@ -98,7 +98,7 @@ def Home():
         '''
         st.markdown(page_bg_img, unsafe_allow_html=True)
         st.markdown("<h1 style='text-align: center; color: #002967;'>Finances and Stocks</h1>", unsafe_allow_html=True)
-        st.markdown("<h1 style='text-align: center; color: #002967;'>App for Streamlines Decisions</h1>", unsafe_allow_html=True)
+        st.markdown("<h1 style='text-align: center; color: #002967;'>App for Streamlines Investments</h1>", unsafe_allow_html=True)
         st.write(
         """
         Artificial Intelligence helps you to perform a successful future, taking the correct decisions! 
