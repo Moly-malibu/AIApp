@@ -290,7 +290,7 @@ def Portfolio():
         """
         - Select 5 companies where you want to invest or Analysis.  ('others' it needs more companies)  
 
-        - Select Date. (NAN empty date)
+        - Select Date.
         ---
         """)
     
