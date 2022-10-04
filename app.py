@@ -215,7 +215,7 @@ title_temp = """
 	      <div class="row">
 	        <div class="col l6 s12">
                 <h4 style='text-align: center; class="black-text-dark">AI Internet of Things (IoT)-</h4>
-	          <h6 style='text-align: center; class="black-text">Forecasting</h6>
+	          <h6 style='text-align: center; class="black-text">Forecasting by Smart Decisions </h6>
               <h6 class="Sklearn, Tensorflow,  Keras, Pandas Profile, Numpy, Math, Data Visualization. </h6>
 	        </div>     
 	  </footer>
