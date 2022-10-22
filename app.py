@@ -72,7 +72,7 @@ from requests.api import options
 import os
 
 st.markdown("<h1 style='text-align: center; color: #002967;'>Finances and Stocks</h1>", unsafe_allow_html=True)
-
+st.markdown("<h1 style='text-align: center; color: #002967;'>App for Streamlines Investments</h1>", unsafe_allow_html=True)
 def main():
     # Register pages
     pages = {
@@ -82,8 +82,9 @@ def main():
         'Statement': Statement,
         'Portfolio': Portfolio,
         "Prediction_model": Prediction_model,
+        "Profit by Company": Profit,
         "IndustryAVG": IndustryAVG,
-        "Profit": Profit,
+        "Profit by Industry": ProfitIndustry,
     }
     st.sidebar.title("Companies Analysis")
     page = st.sidebar.selectbox("Select Menu", tuple(pages.keys()))
@@ -99,7 +100,6 @@ def Home():
         </style>
         '''
         st.markdown(page_bg_img, unsafe_allow_html=True)
-        # st.markdown("<h1 style='text-align: center; color: #002967;'>App for Streamlines Investments</h1>", unsafe_allow_html=True)
         st.write(
         """
         Artificial Intelligence helps you to perform a successful future, taking the correct decisions! 
@@ -216,7 +216,6 @@ title_temp = """
 	      <div class="row">
 	        <div class="col l6 s12">
                 <h4 style='text-align: center; class="black-text-dark">AI Internet of Things (IoT)-</h4>
-	           <h6 style='text-align: center; class="black-text">Forecasting by Smart Decisions </h6>
               <h6 class="Sklearn, Tensorflow,  Keras, Pandas Profile, Numpy, Math, Data Visualization. </h6>
 	        </div>     
 	  </footer>
@@ -540,6 +539,25 @@ def Prediction_model():
     st.write(tickerDf)
     # ...
 
+def ProfitIndustry():
+    page_bg_img = '''
+    <style>
+    .stApp {
+    background-image: url("https://img.freepik.com/free-photo/3d-geometric-abstract-cuboid-wallpaper-background_1048-9891.jpg?size=626&ext=jpg&ga=GA1.2.635976572.1603931911");
+    background-size: cover;
+    }
+    </style>
+    '''
+    st.markdown(page_bg_img, unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align: center; color: #002966;'>Profit of Stock Market by Industry</h1>", unsafe_allow_html=True)
+    symbols = 'https://raw.githubusercontent.com/Moly-malibu/AIApp/main/industAVG.csv'
+    df = pd.read_csv(symbols)
+    tickerSymbol = st.sidebar.selectbox('Company List', (df))
+    company = yf.Ticker(tickerSymbol)
+    analysis = company.history(period='max', interval='1wk')
+    profile = ProfileReport(analysis, explorative=True)
+    st_profile_report(profile)
+
 def Profit():
     page_bg_img = '''
     <style>
@@ -558,8 +576,7 @@ def Profit():
     st.write('Web:', company.info["website"])
     analysis = company.history(period='max', interval='1wk')
     profile = ProfileReport(analysis, explorative=True)
-    st_profile_report(profile)
-    
+    st_profile_report(profile)    
 
 def Statement():
     page_bg_img = '''
