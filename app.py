@@ -71,6 +71,8 @@ from pandas.core import groupby
 from requests.api import options 
 import os
 
+from vega_datasets import data
+
 def main():
     # Register pages
     pages = {
@@ -264,6 +266,8 @@ def IndustryAVG():
         # plt.title("Industry")
         # st.set_option('deprecation.showPyplotGlobalUse', False)
         # st.pyplot()
+        source = data.stocks()
+        source = source[source.symbol.isin(symbols)]
         chart = chart.get_chart(analysis)
         st.altair_chart(chart, use_container_width=True)
 
