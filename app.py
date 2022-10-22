@@ -76,8 +76,8 @@ def main():
     pages = {
         "Home": Home,
         "IndustryAVG": IndustryAVG,
-        "Index": Index,
         "Stock": Stock,
+        "Index": Index,
         'Statement': Statement,
         'Portfolio': Portfolio,
         "Prediction_model": Prediction_model,
