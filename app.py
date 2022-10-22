@@ -258,12 +258,14 @@ def IndustryAVG():
         button_clicked = st.sidebar.button("GO")
         analysis = yf.download(tickerSymbol1, start=start, end=None)
         st.write('Analysis', analysis)
-        analysis['Adj Close'].plot()
-        plt.xlabel("Date")
-        plt.ylabel("Adjusted")
-        plt.title("Industry")
-        st.set_option('deprecation.showPyplotGlobalUse', False)
-        st.pyplot()
+        # analysis['Adj Close'].plot()
+        # plt.xlabel("Date")
+        # plt.ylabel("Adjusted")
+        # plt.title("Industry")
+        # st.set_option('deprecation.showPyplotGlobalUse', False)
+        # st.pyplot()
+        chart = chart.get_chart(analysis)
+        st.altar_chart(chart, use_container_width=True)
 
 def Index(): 
     page_bg_img = '''
