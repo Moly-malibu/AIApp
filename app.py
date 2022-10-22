@@ -683,15 +683,15 @@ def Statement():
                 count +=1
             num_simulations_df[x] = price_series
 
-        fig = plt.figure()
-        plt.title('Monte Carlo Simulation')
-        plt.plot(num_simulations_df)
-        plt.axhline(y=last_price, color='r', linestyle='-')
-        plt.xlabel('Day')
-        plt.ylabel('Price')
-        st.set_option('deprecation.showPyplotGlobalUse', False)
-        st.pyplot()
-        st.write('Price Series Predict: ', num_simulations_df)
+        # fig = plt.figure()
+        # plt.title('Monte Carlo Simulation')
+        # plt.plot(num_simulations_df)
+        # plt.axhline(y=last_price, color='r', linestyle='-')
+        # plt.xlabel('Day')
+        # plt.ylabel('Price')
+        # st.set_option('deprecation.showPyplotGlobalUse', False)
+        # st.pyplot()
+        # st.write('Price Series Predict: ', num_simulations_df)
     # company_general = st.sidebar.checkbox("Quick_Ratio")
     # if company_general:
     #     st.subheader("""**Quick Ratio**""")
