@@ -247,8 +247,7 @@ def IndustryAVG():
     ## Closing Price
 
     """)
-    c =alt.Chart(tickerDf.Close).mark_circle().encode(x='Adjusted', y='Date', size='C', color='C', tooltip=['a', 'b', 'c'])
-    st.altair_chart(c, use_container_width=True)
+    st.line_chart(tickerDf.Close)
     st.write(""" 
     ## Volume Price
     """)
