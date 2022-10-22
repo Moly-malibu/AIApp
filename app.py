@@ -234,7 +234,7 @@ def IndustryAVG():
     </style>
     '''
     st.markdown(page_bg_img, unsafe_allow_html=True)
-    symbols = 'https://raw.githubusercontent.com/Moly-malibu/AIApp/main/bxo_lmmS1.csv'
+    symbols = 'https://raw.githubusercontent.com/Moly-malibu/AIApp/main/industAVG.csv'
     df = pd.read_csv(symbols)
     st.markdown("<h1 style='text-align: center; color: #002967;'>Stock Price </h1>", unsafe_allow_html=True)
     start = st.sidebar.date_input("Enter Date Begin Analysis: ") 
