@@ -245,11 +245,11 @@ def IndustryAVG():
     ## Closing Price
 
     """)
-    st.line_chart(tickerDf.Close)
+    st.altair_chart(tickerDf.Close)
     st.write(""" 
     ## Volume Price
     """)
-    st.line_chart(tickerDf.Volume)
+    st.altair_chart(tickerDf.Volume)
     st.markdown("<h1 style='text-align: center; color: #002967;'>Stock Compared by Industry</h1>", unsafe_allow_html=True)
     st.markdown('Help to take algoritmc decision about stocks')
     company = tickerSymbol1 = st.sidebar.multiselect("Select Industry Stock be compared", (df))
@@ -265,7 +265,7 @@ def IndustryAVG():
         # st.set_option('deprecation.showPyplotGlobalUse', False)
         # st.pyplot()
         chart = chart.get_chart(analysis)
-        st.altar_chart(chart, use_container_width=True)
+        st.altair_chart(chart, use_container_width=True)
 
 def Index(): 
     page_bg_img = '''
