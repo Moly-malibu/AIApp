@@ -263,7 +263,7 @@ def IndustryAVG():
         analysis['Adj Close'].plot()
         plt.xlabel("Date")
         plt.ylabel("Adjusted")
-        plt.title("Industry")
+        plt.title("Stock by Industry")
         st.set_option('deprecation.showPyplotGlobalUse', False)
         st.pyplot()
         # source = data.stocks()
