@@ -75,6 +75,7 @@ def main():
     # Register pages
     pages = {
         "Home": Home,
+        "IndustryAVG": IndustryAVG,
         "Index": Index,
         "Stock": Stock,
         'Statement': Statement,
@@ -222,7 +223,52 @@ title_temp = """
 	"""
 components.html(title_temp,height=100)
     
-#Analysis stocks companies by close and volume.
+#Analysis stocks companies by close and volume
+def IndustryAVG(): 
+    page_bg_img = '''
+    <style>
+    .stApp {
+    background-image: url("https://img.freepik.com/free-photo/3d-geometric-abstract-cuboid-wallpaper-background_1048-9891.jpg?size=626&ext=jpg&ga=GA1.2.635976572.1603931911");
+    background-size: cover;
+    }
+    </style>
+    '''
+    st.markdown(page_bg_img, unsafe_allow_html=True)
+    symbols = 'https://raw.githubusercontent.com/Moly-malibu/AIApp/main/bxo_lmmS1.csv'
+    df = pd.read_csv(symbols)
+    st.markdown("<h1 style='text-align: center; color: #002967;'>Stock Price </h1>", unsafe_allow_html=True)
+    start = st.sidebar.date_input("Enter Date Begin Analysis: ") 
+    tickerSymbol = st.sidebar.selectbox('Stocks Close and Volume price by Company', (df))
+    tickerData = yf.Ticker(tickerSymbol)
+    tickerDf = tickerData.history(period='id', start=start, end=None)
+    st.write("""# Analysis of Data""")
+    st.write("""
+    ## Closing Price
+
+    """)
+    st.line_chart(tickerDf.Close)
+    st.write(""" 
+    ## Volume Price
+    """)
+    st.line_chart(tickerDf.Volume)
+    st.markdown("<h1 style='text-align: center; color: #002967;'>Stock Price Compared</h1>", unsafe_allow_html=True)
+    st.write("""
+    **Business** and **Techology** are two fills that have changed the world, both occupy the main ratings in finance, being one of the most highly valued in the stock market leading their owners to be billionaires, in this simple application we can analyze the stock movement and prediction of future price of stock used algoriths and Machile Learning.
+    Show are the Stock **Closing Price** and ** Volume** of Stocks by year!
+    """)
+    st.markdown('Help to take algoritmc decision about stocks')
+    company = tickerSymbol1 = st.sidebar.multiselect("Select Companies Stock be compared", (df))
+    if company:
+        st.subheader("""**Compared Status**""")
+        button_clicked = st.sidebar.button("GO")
+        analysis = yf.download(tickerSymbol1, start=start, end=None)
+        st.write('Analysis', analysis)
+        analysis['Adj Close'].plot()
+        plt.xlabel("Date")
+        plt.ylabel("Adjusted")
+        plt.title("Company Stock")
+        st.set_option('deprecation.showPyplotGlobalUse', False)
+        st.pyplot()
 
 def Index(): 
     page_bg_img = '''
