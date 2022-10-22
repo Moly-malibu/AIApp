@@ -228,7 +228,7 @@ def IndustryAVG():
     page_bg_img = '''
     <style>
     .stApp {
-    background-image: url("https://images.pexels.com/photos/1193743/pexels-photo-1193743.jpeg?cs=srgb&dl=pexels-dan-cristian-p%C4%83dure%C8%9B-1193743.jpg&fm=jpg&_gl=1*lhloxo*_ga*MTI1MDQwMzMyOS4xNjU5ODc1MzA2*_ga_8JE65Q40S6*MTY2NjQxMzM3OS4xMC4xLjE2NjY0MTM0MDAuMC4wLjA.");
+    background-image: url("https://www.pexels.com/photo/close-up-photography-of-colored-pencils-743986/");
     background-size: cover;
     }
     </style>
