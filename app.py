@@ -241,7 +241,7 @@ def IndustryAVG():
     tickerSymbol = st.sidebar.selectbox('Stocks Close and Volume price by Industry', (df))
     tickerData = yf.Ticker(tickerSymbol)
     tickerDf = tickerData.history(period='id', start=start, end=None)
-    st.write("""# Stock Market by Industry""")
+    st.write("""# by Industry""")
     st.write("""
     ## Closing Price
 
