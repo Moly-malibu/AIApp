@@ -247,7 +247,7 @@ def IndustryAVG():
     ## Closing Price
 
     """)
-    source = source[df.tickerSymbol.isin(symbols)]
+    source = source[df.tickerDf.isin(symbols)]
     chart = chart.get_chart(source)
     st.altair_chart(chart, use_container_width=True)
     st.line_chart(tickerDf.Volume)
