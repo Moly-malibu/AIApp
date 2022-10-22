@@ -247,11 +247,12 @@ def IndustryAVG():
     ## Closing Price
 
     """)
-    st.altair_chart(tickerDf.Close)
+    c =alt.Chart(tickerDf.Close).mark_circle().encode(x='Adjusted', y='Date', size='C', color='C', tooltip=['a', 'b', 'c'])
+    st.altair_chart(c, use_container_width=True)
     st.write(""" 
     ## Volume Price
     """)
-    st.altair_chart(tickerDf.Volume)
+    st.altair_chart(altair_chart, use_container_width=False, tickerDf.Volume)
     st.markdown("<h1 style='text-align: center; color: #002967;'>Stock Compared by Industry</h1>", unsafe_allow_html=True)
     st.markdown('Help to take algoritmc decision about stocks')
     company = tickerSymbol1 = st.sidebar.multiselect("Select Industry Stock be compared", (df))
