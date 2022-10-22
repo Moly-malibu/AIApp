@@ -236,12 +236,11 @@ def IndustryAVG():
     st.markdown(page_bg_img, unsafe_allow_html=True)
     symbols = 'https://raw.githubusercontent.com/Moly-malibu/AIApp/main/industAVG.csv'
     df = pd.read_csv(symbols)
-    st.markdown("<h1 style='text-align: center; color: #002967;'>Main Standards of US Stock Market & Behavior</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align: center; color: #002967;'>Main Standards of US Stock Market & Behavior by Industry</h1>", unsafe_allow_html=True)
     start = st.sidebar.date_input("Enter Date Begin Analysis: ") 
     tickerSymbol = st.sidebar.selectbox('Stocks Close and Volume price by Industry', (df))
     tickerData = yf.Ticker(tickerSymbol)
     tickerDf = tickerData.history(period='id', start=start, end=None)
-    st.markdown("<h1 style='text-align: center; color: #002967;'>By Industry</h1>", unsafe_allow_html=True)
     st.write("""
     ## Closing Price
 
