@@ -247,7 +247,7 @@ def IndustryAVG():
     ## Closing Price
 
     """)
-    st.line_chart(tickerDf.Close)
+    st.pyplot(tickerDf.Close)
     st.write(""" 
     ## Volume Price
     """)
