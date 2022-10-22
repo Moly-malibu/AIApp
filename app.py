@@ -228,7 +228,7 @@ def IndustryAVG():
     page_bg_img = '''
     <style>
     .stApp {
-    background-image: url("https://www.pexels.com/photo/close-up-photography-of-colored-pencils-743986/");
+    background-image: url("https://images.pexels.com/photos/743986/pexels-photo-743986.jpeg?cs=srgb&dl=pexels-jess-bailey-designs-743986.jpg&fm=jpg&_gl=1*ckiwkv*_ga*MTI1MDQwMzMyOS4xNjU5ODc1MzA2*_ga_8JE65Q40S6*MTY2NjQxMzM3OS4xMC4xLjE2NjY0MTM3OTMuMC4wLjA.");
     background-size: cover;
     }
     </style>
@@ -236,7 +236,7 @@ def IndustryAVG():
     st.markdown(page_bg_img, unsafe_allow_html=True)
     symbols = 'https://raw.githubusercontent.com/Moly-malibu/AIApp/main/industAVG.csv'
     df = pd.read_csv(symbols)
-    st.markdown("<h1 style='text-align: center; color: #002967;'>Main Standards of US Stock Market and Behavior</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align: center; color: #002967;'>Main Standards of US Stock Market & Behavior</h1>", unsafe_allow_html=True)
     start = st.sidebar.date_input("Enter Date Begin Analysis: ") 
     tickerSymbol = st.sidebar.selectbox('Stocks Close and Volume price by Industry', (df))
     tickerData = yf.Ticker(tickerSymbol)
@@ -251,7 +251,7 @@ def IndustryAVG():
     ## Volume Price
     """)
     st.line_chart(tickerDf.Volume)
-    st.markdown("<h1 style='text-align: center; color: #002967;'>Stock Price Compared</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align: center; color: #002967;'>Stock Compared by Industry</h1>", unsafe_allow_html=True)
     st.markdown('Help to take algoritmc decision about stocks')
     company = tickerSymbol1 = st.sidebar.multiselect("Select Industry Stock be compared", (df))
     if company:
