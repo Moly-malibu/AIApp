@@ -691,7 +691,7 @@ def Statement():
         # plt.ylabel('Price')
         # st.set_option('deprecation.showPyplotGlobalUse', False)
         # st.pyplot()
-        # st.write('Price Series Predict: ', num_simulations_df)
+        st.write('Price Series Predict: ', num_simulations_df)
     # company_general = st.sidebar.checkbox("Quick_Ratio")
     # if company_general:
     #     st.subheader("""**Quick Ratio**""")
