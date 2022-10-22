@@ -70,25 +70,24 @@ from pandas._config.config import reset_option
 from pandas.core import groupby
 from requests.api import options 
 import os
-import altair as alt
-from vega_datasets import data
+
+st.markdown("<h1 style='text-align: center; color: #002967;'>Finances and Stocks</h1>", unsafe_allow_html=True)
 
 def main():
     # Register pages
     pages = {
         "Home": Home,
-        "IndustryAVG": IndustryAVG,
         "Stock": Stock,
         "Index": Index,
         'Statement': Statement,
         'Portfolio': Portfolio,
         "Prediction_model": Prediction_model,
+        "IndustryAVG": IndustryAVG,
         "Profit": Profit,
     }
     st.sidebar.title("Companies Analysis")
     page = st.sidebar.selectbox("Select Menu", tuple(pages.keys()))
     pages[page]()
-
 def Home():
     def main():
         page_bg_img = '''
@@ -100,8 +99,7 @@ def Home():
         </style>
         '''
         st.markdown(page_bg_img, unsafe_allow_html=True)
-        st.markdown("<h1 style='text-align: center; color: #002967;'>Finances and Stocks</h1>", unsafe_allow_html=True)
-        st.markdown("<h1 style='text-align: center; color: #002967;'>App for Streamlines Investments</h1>", unsafe_allow_html=True)
+        # st.markdown("<h1 style='text-align: center; color: #002967;'>App for Streamlines Investments</h1>", unsafe_allow_html=True)
         st.write(
         """
         Artificial Intelligence helps you to perform a successful future, taking the correct decisions! 
@@ -218,7 +216,7 @@ title_temp = """
 	      <div class="row">
 	        <div class="col l6 s12">
                 <h4 style='text-align: center; class="black-text-dark">AI Internet of Things (IoT)-</h4>
-	          <h6 style='text-align: center; class="black-text">Forecasting by Smart Decisions </h6>
+	           <h6 style='text-align: center; class="black-text">Forecasting by Smart Decisions </h6>
               <h6 class="Sklearn, Tensorflow,  Keras, Pandas Profile, Numpy, Math, Data Visualization. </h6>
 	        </div>     
 	  </footer>
@@ -247,10 +245,7 @@ def IndustryAVG():
     ## Closing Price
 
     """)
-    # source = source[df.tickerDf.isin(symbols)]
-    chart = chart.get_chart(tickerDf)
-    st.altair_chart(chart, use_container_width=True)
-    st.line_chart(tickerDf.Volume)
+    st.line_chart(tickerDf.Volume, use_container_width=True)
     st.write(""" 
     ## Volume Price
     """)
@@ -269,10 +264,6 @@ def IndustryAVG():
         plt.title("Stock by Industry")
         st.set_option('deprecation.showPyplotGlobalUse', False)
         st.pyplot()
-        # source = data.stocks()
-        # source = source[source.symbol.isin(symbols)]
-        # chart = chart.get_chart(analysis)
-        # st.altair_chart(chart, use_container_width=True)
 
 def Index(): 
     page_bg_img = '''

@@ -12,6 +12,3 @@ tensorflow
 keras
 yahoofinancials  
 yahoo_fin 
-
-altair
-vega-datasets
