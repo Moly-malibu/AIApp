@@ -265,7 +265,7 @@ def IndustryAVG():
         st.set_option('deprecation.showPyplotGlobalUse', False)
         st.pyplot()
 
-def Index(): 
+def Index():        
     page_bg_img = '''
     <style>
     .stApp {
@@ -287,6 +287,8 @@ def Index():
     ## Closing Price
 
     """)
+    company = yf.Ticker(tickerSymbol)
+    st.write('Web:', company.info["website"])
     st.line_chart(tickerDf.Close)
     st.write(""" 
     ## Volume Price
@@ -407,7 +409,8 @@ def Prediction_model():
     tickerDf = tickerData.history(period='id', start='2019-01-01', end=now)
     data = tickerDf.filter(['Close'])
     dataset = data.values
-
+    company = yf.Ticker(tickerSymbol)
+    st.write('Web:', company.info["website"])
     company_hist = st.sidebar.checkbox('Long Short Term Memory')
     if company_hist:
         st.markdown("<h1 style='text-align: center; color: #002966;'>Long Short Term Memory</h1>", unsafe_allow_html=True)
@@ -552,9 +555,11 @@ def Profit():
     df = pd.read_csv(symbols)
     tickerSymbol = st.sidebar.selectbox('Company List', (df))
     company = yf.Ticker(tickerSymbol)
+    st.write('Web:', company.info["website"])
     analysis = company.history(period='max', interval='1wk')
     profile = ProfileReport(analysis, explorative=True)
     st_profile_report(profile)
+    
 
 def Statement():
     page_bg_img = '''
@@ -573,6 +578,7 @@ def Statement():
     tickerData = YahooFinancials(ticker)
     company = yf.Ticker(ticker)
     # st.write(company.info)
+    st.write('Web:', company.info["website"])
     company_general = st.sidebar.checkbox("Financial Ratio")
     if company_general:
         st.markdown("<h1 style='text-align: center; color: #002966;'>Financial Ratios</h1>", unsafe_allow_html=True)
@@ -743,6 +749,8 @@ def Stock():
     tickerData = yf.Ticker(tickerSymbol2)
     tickerDf = tickerData.history(period='id', start=start, end=None)
     company = yf.Ticker(tickerSymbol2)
+    company = yf.Ticker(tickerSymbol2)
+    st.write('Web:', company.info["website"])
     # st.write(company.info)
     company_general = st.sidebar.checkbox("Company Information")
     if company_general:
