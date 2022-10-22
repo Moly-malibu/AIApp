@@ -247,11 +247,11 @@ def IndustryAVG():
     ## Closing Price
 
     """)
-    st.pyplot(tickerDf.Close)
+    st.line_chart(tickerDf.Volume)
     st.write(""" 
     ## Volume Price
     """)
-    st.pyplot(tickerDf.Volume)
+    st.line_chart(tickerDf.Volume)
     st.markdown("<h1 style='text-align: center; color: #002967;'>Stock Compared by Industry</h1>", unsafe_allow_html=True)
     st.markdown('Help to take algoritmc decision about stocks')
     company = tickerSymbol1 = st.sidebar.multiselect("Select Industry Stock be compared", (df))
