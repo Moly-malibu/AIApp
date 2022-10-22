@@ -71,6 +71,9 @@ from pandas.core import groupby
 from requests.api import options 
 import os
 
+import altair as alt
+from vega_datasets import data
+
 st.markdown("<h1 style='text-align: center; color: #002967;'>Finances and Stocks</h1>", unsafe_allow_html=True)
 st.markdown("<h1 style='text-align: center; color: #002967;'>App for Streamlines Investments</h1>", unsafe_allow_html=True)
 def main():
@@ -450,6 +453,7 @@ def Prediction_model():
         train = data[:train_len]
         valid = data[train_len:]
         valid['Predictions'] = predictions
+
         plt.figure(figsize=(16,8))
         plt.title('Model')
         plt.xlabel('Date', fontsize=18)
@@ -459,6 +463,8 @@ def Prediction_model():
         plt.legend(['train', 'Val', 'Predictions'], loc='upper left')
         st.set_option('deprecation.showPyplotGlobalUse', False)
         st.pyplot()
+
+
         st.markdown("<h1 style='text-align: center; color: #002966;'>Forecasting the Price Stocks</h1>", unsafe_allow_html=True)
         st.write(""" 
         Using keras Long Short Term Memory (LSTM) model that permit to store past information to predict the future price of stocks.
@@ -537,7 +543,6 @@ def Prediction_model():
     st.markdown("<h1 style='text-align: center; color: #002966;'>Compared Forecasting</h1>", unsafe_allow_html=True)
     new_predict = tickerDf['Close']
     st.write(tickerDf)
-    # ...
 
 def ProfitIndustry():
     page_bg_img = '''
@@ -677,6 +682,7 @@ def Statement():
                 price_series.append(price)
                 count +=1
             num_simulations_df[x] = price_series
+
         fig = plt.figure()
         plt.title('Monte Carlo Simulation')
         plt.plot(num_simulations_df)
