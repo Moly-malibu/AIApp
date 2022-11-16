@@ -71,9 +71,6 @@ from pandas.core import groupby
 from requests.api import options 
 import os
 
-import altair as alt
-from vega_datasets import data
-
 st.markdown("<h1 style='text-align: center; color: #002967;'>Finances and Stocks</h1>", unsafe_allow_html=True)
 st.markdown("<h1 style='text-align: center; color: #002967;'>App for Streamlines Investments</h1>", unsafe_allow_html=True)
 def main():
