@@ -29,7 +29,7 @@ plt.style.use('fivethirtyeight')
 #Prediction
 import math
 import sklearn
-from scikit-learn
+from scikit learn
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.linear_model import LinearRegression
