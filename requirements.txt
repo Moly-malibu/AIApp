@@ -12,4 +12,3 @@ tensorflow
 keras
 yahoofinancials  
 yahoo_fin 
-joblib
