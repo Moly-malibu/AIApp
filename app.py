@@ -15,7 +15,7 @@ from requests import get
 from bs4 import BeautifulSoup
 
 #Profit
-from pandas_profiling import ProfileReport
+from ydata_profiling import ProfileReport
 from streamlit_pandas_profiling import st_profile_report
 from pandas_profiling.utils.cache import cache_file
 
