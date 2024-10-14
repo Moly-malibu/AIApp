@@ -12,6 +12,3 @@ keras
 yahoofinancials  
 yahoo_fin 
 ydata-profiling
-streamlit-pandas-profiling
-python-dotenv
-ydata-profiling
