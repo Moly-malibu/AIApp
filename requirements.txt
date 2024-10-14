@@ -12,3 +12,9 @@ tensorflow
 keras
 yahoofinancials  
 yahoo_fin 
+streamlit
+openai
+llama-index==0.10.4
+nltk
+httpx
+pypdf
