@@ -4,7 +4,6 @@ numpy
 matplotlib  
 bs4 
 beautifulsoup4  
-pandas-profiling 
 streamlit-pandas-profiling  
 yfinance  
 scikit-learn 
@@ -14,5 +13,5 @@ yahoofinancials
 yahoo_fin 
 ydata-profiling
 streamlit-pandas-profiling
-pandas-profiling
-python-dotenvv
+python-dotenv
+ydata-profiling
