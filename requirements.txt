@@ -13,3 +13,5 @@ keras
 yahoofinancials  
 yahoo_fin 
 ydata-profiling
+streamlit-pandas-profiling
+pandas-profiling
