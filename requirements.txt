@@ -1,6 +1,6 @@
 streamlit  
 pandas
-numpy  
+NumPy
 matplotlib  
 bs4 
 beautifulsoup4  
@@ -11,4 +11,4 @@ tensorflow
 keras
 yahoofinancials  
 yahoo_fin 
-ydata-profiling
+
