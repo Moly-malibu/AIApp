@@ -589,15 +589,10 @@ def Portfolio():
         st.write("No data available for this ticker symbol.")
 
     #get Growth Investment
-
         dailyMeanSimpleReturns = daily_return.mean()
-        # st.write('***Daily Mean Simple Return:*** ', dailyMeanSimpleReturns)
         randomWeights = np.array([0.4, 0.1, 0.3, 0.1, 0.1])
         portfoliosimpleReturn = np.sum(dailyMeanSimpleReturns*randomWeights)
-        # st.write('***Daily Expected Portfolio Return:*** '+str(portfoliosimpleReturn))
-        # st.write('***Expected Annualised Portfolio Return:*** ' + str(portfoliosimpleReturn*253))
         dailyCumulSimpleReturn = (daily_return+1).cumprod()
-        # st.write('***Growth of Investment:*** ', dailyCumulSimpleReturn)
     st.write("""***Daily Expected Portfolio Return and Expected Annualized Portfolio Return***""")
     st.markdown(
     """ 
@@ -672,13 +667,8 @@ def Portfolio():
     ax.set_title('Cumulative Returns of Selected Stocks')
     ax.legend()
     ax.grid(True)
-
     st.pyplot(fig)
-
-
-
-
-
+    pu
     plt.figure(figsize=(12.2, 6))
     for c in dailyCumulSimpleReturn.columns.values:
         plt.plot(dailyCumulSimpleReturn.index, dailyCumulSimpleReturn[c], lw=2, label=c)
