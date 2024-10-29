@@ -235,22 +235,13 @@ def IndustryAVG():
     st.markdown(page_bg_img, unsafe_allow_html=True)
     symbols = 'https://raw.githubusercontent.com/Moly-malibu/AIApp/main/industAVG.csv'
     df = pd.read_csv(symbols)
-    st.markdown("<h1 style='text-align: center; color: #002967;'>US Stock Market & Behavior by Industry</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align: center; color: #002967;'>Stock Market</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align: center; color: #002967;'>Behavior by Industry</h1>", unsafe_allow_html=True)
     start = st.sidebar.date_input("Enter Date Begin Analysis: ") 
     tickerSymbol = st.sidebar.selectbox('Stocks Close and Volume price by Industry', (df))
     tickerData = yf.Ticker(tickerSymbol)
     tickerDf = tickerData.history(period='id', start=start, end=None)
-    st.write("""
-    ## Closing Price
-
-#     """)
-    st.line_chart(tickerDf.Volume, use_container_width=True)
-    st.write(""" 
-    ## Volume Price
-    """)
-    st.line_chart(tickerDf.Volume)
-    st.markdown("<h1 style='text-align: center; color: #002967;'>Stock Compared by Industry</h1>", unsafe_allow_html=True)
-    st.markdown('Help to take algoritmc decision about stocks')
+    st.markdown('Make Informed Stock Decisions, Simplified')
     company = tickerSymbol1 = st.sidebar.multiselect("Select Industry Stock be compared", (df))
 
     import mpld3
@@ -301,6 +292,88 @@ def IndustryAVG():
             st.plotly_chart(fig)
         else:
             st.write("No data available for this ticker.")
+        
+        st.write(
+        """
+        Stock Market Indices
+
+        - ***DJI (Dow Jones Industrial Average)***: A price-weighted index that tracks 30 large, publicly-owned companies in the U.S. It serves as a barometer for the overall health of the U.S. economy and is one of the oldest indices, established in 1896.
+        
+        - ***IXIC (NASDAQ Composite)***:  This index includes almost all stocks listed on the NASDAQ stock exchange, heavily weighted towards technology companies. It is a capitalization-weighted index, meaning companies with larger market capitalizations have a greater impact on its value.
+        
+        - ***GSPC (S&P 500)***: Comprising 500 of the largest U.S. companies, this index is also market-capitalization weighted. It is widely regarded as one of the best representations of the U.S. stock market and economy.
+       
+        - ***TYX (CBOE 10-Year Treasury Yield Index***: This index reflects the yield on 10-year U.S. Treasury bonds, which is often used as a benchmark for other interest rates and as an indicator of investor sentiment regarding future economic conditions.
+       
+        - ***NYA (NYSE Composite Index)***: This index includes all common stocks listed on the New York Stock Exchange (NYSE). It is a broad measure of the performance of the NYSE and includes both domestic and international companies.
+        
+        - ***N225 (Nikkei 225)***: A stock market index for the Tokyo Stock Exchange that includes 225 large companies. It is price-weighted, similar to the DJIA, and is one of Japan's most prominent indices.
+        
+        - ***RUT (Russell 2000)***: This index measures the performance of the smallest 2,000 stocks in the Russell 3000 Index, representing small-cap companies in the U.S. market.
+        Commodity Futures
+        
+        - ***CL=F (Crude Oil WTI Futures)***: This represents futures contracts for West Texas Intermediate (WTI) crude oil, a benchmark for oil pricing in North America.
+        
+        - ***GC=F (Gold Futures)***: This symbol represents futures contracts for gold, which are used by investors to hedge against inflation or currency fluctuations.
+        
+        - ***SI=F (Silver Futures)***:  Similar to gold futures, this represents futures contracts for silver, another precious metal often used as an investment.
+        Currency Pairs
+        
+        - ***EURUSD=X***: This symbol represents the exchange rate between the Euro and the U.S. Dollar, one of the most traded currency pairs in the world.
+        
+        - ***GBPUSD=X***: This represents the exchange rate between the British Pound and the U.S. Dollar, another major currency pair in global markets.
+        Other Indices
+        
+        - ***TNX (CBOE 10-Year Treasury Note Yield)***: This index reflects the yield on 10-year Treasury notes, providing insights into investor expectations regarding future interest rates and inflation.
+        
+        - ***CMC200 (Crypto Market Cap Index)***:  An index that tracks the market capitalization of cryptocurrencies, providing a snapshot of overall market performance in this sector.
+        
+        - ***BTC-USD (Bitcoin)***: Represents Bitcoin's price in U.S. Dollars, reflecting its value in the cryptocurrency market.
+        
+        
+        
+        These indices and commodities provide valuable insights into various sectors of financial markets, including equities, commodities, currencies, and fixed income securities. They are widely used by investors for analysis and decision-making regarding investments and economic trends.
+
+        EXAMPlE:
+
+        When comparing the Dow Jones Industrial Average (DJI), the CBOE 10-Year Treasury Yield Index (TYX), and the Nikkei 225 (N225), several insights can be drawn regarding market performance, economic conditions, and investor sentiment. Here’s a breakdown of what this comparison can show:
+        
+        
+        - ***1. Market Performance***:
+
+        ***DJI***: Represents the performance of 30 large, established companies in the U.S. A rising DJI indicates strong performance in the industrial sector and overall economic health.
+        
+        ***TYX***: Reflects the yield on 10-year U.S. Treasury bonds. A higher yield often suggests that investors expect stronger economic growth and potentially higher inflation, leading to increased interest rates.
+        
+        ***N225***: Shows the performance of major Japanese companies. Comparing it with DJI can highlight differences in market sentiment between the U.S. and Japan.
+        
+        - ***2. Economic Indicators*** The relationship between DJI and TYX can indicate investor confidence. If the DJI is rising while TYX is also increasing, it may suggest that investors are optimistic about economic growth but are also concerned about inflation leading to higher interest rates.
+        Conversely, if DJI is falling while TYX rises, it may indicate a flight to safety among investors, where they prefer bonds over stocks due to economic uncertainty.
+        
+       - ***3. Global Market Trends***
+
+        Comparing DJI and N225 can provide insights into how global markets react to similar economic events. ***For example***, if both indices are moving in tandem, it may suggest a global trend affecting investor sentiment.
+        If one index rises while the other falls, it may indicate regional differences in economic conditions or investor confidence.
+        
+        - ***4. Investment Strategies***
+
+        Investors might use this comparison to make decisions about asset allocation. For instance, if DJI is performing well but TYX is rising sharply, it may prompt investors to shift some assets from stocks to bonds to hedge against potential interest rate hikes.
+        Observing N225 alongside DJI could influence decisions for international investments, particularly for those looking at exposure in Asian markets.
+        
+        - ***5. Risk Assessment***
+        The volatility of these indices can help assess market risk. A stable DJI with fluctuating TYX could suggest a cautious approach to investing in U.S. equities, while a volatile N225 might signal greater risk in Japanese markets.
+        
+        
+        - ***Conclusion***
+        
+        
+        By comparing the DJI with TYX and N225, investors can gain a comprehensive view of market dynamics, economic expectations, and global trends. This analysis helps in making informed investment decisions based on varying factors influencing stock and bond markets across different regions.
+
+
+
+
+        ---
+        """)
 
 # def Index():        
 #     page_bg_img = '''
