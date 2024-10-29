@@ -84,7 +84,7 @@ def main():
         # 'Portfolio': Portfolio,
         # "Prediction_model": Prediction_model,
         # "Profit by Company": Profit,
-        # "IndustryAVG": IndustryAVG,
+        "IndustryAVG": IndustryAVG,
         # "Profit by Industry": ProfitIndustry,
     }
     st.sidebar.title("Companies Analysis")
@@ -223,46 +223,84 @@ title_temp = """
 components.html(title_temp,height=100)
     
 #Analysis stocks companies by close and volume
-# def IndustryAVG(): 
-#     page_bg_img = '''
-#     <style>
-#     .stApp {
-#     background-image: url("https://images.pexels.com/photos/743986/pexels-photo-743986.jpeg?cs=srgb&dl=pexels-jess-bailey-designs-743986.jpg&fm=jpg&_gl=1*ckiwkv*_ga*MTI1MDQwMzMyOS4xNjU5ODc1MzA2*_ga_8JE65Q40S6*MTY2NjQxMzM3OS4xMC4xLjE2NjY0MTM3OTMuMC4wLjA.");
-#     background-size: cover;
-#     }
-#     </style>
-#     '''
-#     st.markdown(page_bg_img, unsafe_allow_html=True)
-#     symbols = 'https://raw.githubusercontent.com/Moly-malibu/AIApp/main/industAVG.csv'
-#     df = pd.read_csv(symbols)
-#     st.markdown("<h1 style='text-align: center; color: #002967;'>Main Standards of US Stock Market & Behavior by Industry</h1>", unsafe_allow_html=True)
-#     start = st.sidebar.date_input("Enter Date Begin Analysis: ") 
-#     tickerSymbol = st.sidebar.selectbox('Stocks Close and Volume price by Industry', (df))
-#     tickerData = yf.Ticker(tickerSymbol)
-#     tickerDf = tickerData.history(period='id', start=start, end=None)
-#     st.write("""
-#     ## Closing Price
+def IndustryAVG(): 
+    page_bg_img = '''
+    <style>
+    .stApp {
+    background-image: url("https://images.pexels.com/photos/743986/pexels-photo-743986.jpeg?cs=srgb&dl=pexels-jess-bailey-designs-743986.jpg&fm=jpg&_gl=1*ckiwkv*_ga*MTI1MDQwMzMyOS4xNjU5ODc1MzA2*_ga_8JE65Q40S6*MTY2NjQxMzM3OS4xMC4xLjE2NjY0MTM3OTMuMC4wLjA.");
+    background-size: cover;
+    }
+    </style>
+    '''
+    st.markdown(page_bg_img, unsafe_allow_html=True)
+    symbols = 'https://raw.githubusercontent.com/Moly-malibu/AIApp/main/industAVG.csv'
+    df = pd.read_csv(symbols)
+    st.markdown("<h1 style='text-align: center; color: #002967;'>US Stock Market & Behavior by Industry</h1>", unsafe_allow_html=True)
+    start = st.sidebar.date_input("Enter Date Begin Analysis: ") 
+    tickerSymbol = st.sidebar.selectbox('Stocks Close and Volume price by Industry', (df))
+    tickerData = yf.Ticker(tickerSymbol)
+    tickerDf = tickerData.history(period='id', start=start, end=None)
+    st.write("""
+    ## Closing Price
 
 #     """)
-#     st.line_chart(tickerDf.Volume, use_container_width=True)
-#     st.write(""" 
-#     ## Volume Price
-#     """)
-#     st.line_chart(tickerDf.Volume)
-#     st.markdown("<h1 style='text-align: center; color: #002967;'>Stock Compared by Industry</h1>", unsafe_allow_html=True)
-#     st.markdown('Help to take algoritmc decision about stocks')
-#     company = tickerSymbol1 = st.sidebar.multiselect("Select Industry Stock be compared", (df))
-#     if company:
-#         st.subheader("""**Compared Status**""")
-#         button_clicked = st.sidebar.button("GO")
-#         analysis = yf.download(tickerSymbol1, start=start, end=None)
-#         st.write('Analysis', analysis)
-#         analysis['Adj Close'].plot()
-#         plt.xlabel("Date")
-#         plt.ylabel("Adjusted")
-#         plt.title("Stock by Industry")
-#         st.set_option('deprecation.showPyplotGlobalUse', False)
-#         st.pyplot()
+    st.line_chart(tickerDf.Volume, use_container_width=True)
+    st.write(""" 
+    ## Volume Price
+    """)
+    st.line_chart(tickerDf.Volume)
+    st.markdown("<h1 style='text-align: center; color: #002967;'>Stock Compared by Industry</h1>", unsafe_allow_html=True)
+    st.markdown('Help to take algoritmc decision about stocks')
+    company = tickerSymbol1 = st.sidebar.multiselect("Select Industry Stock be compared", (df))
+
+    import mpld3
+
+    if company:
+        st.subheader("**Compared Status**")
+        button_clicked = st.sidebar.button("GO")
+        
+        # Downloading data
+        analysis = yf.download(tickerSymbol1, start=start, end=None)
+        st.write('Analysis', analysis)
+        
+        # Check if data is available
+        if not analysis.empty:
+            fig, ax = plt.subplots()
+            analysis['Adj Close'].plot(ax=ax)
+            plt.xlabel("Date")
+            plt.ylabel("Adjusted")
+            plt.title("Stock by Industry")
+            
+            # Convert figure to HTML for interactivity
+            fig_html = mpld3.fig_to_html(fig)
+            st.components.v1.html(fig_html, height=600)
+        else:
+            st.write("No data available for this ticker.")
+
+    import plotly.graph_objs as go
+
+    if company:
+        st.subheader("**Compared Status**")
+        # button_clicked = st.sidebar.button("GO")
+        
+        # Downloading data
+        analysis = yf.download(tickerSymbol1, start=start, end=None)
+        st.write('Analysis', analysis)
+        
+        # Check if data is available
+        if not analysis.empty:
+            fig = go.Figure()
+            fig.add_trace(go.Scatter(x=analysis.index, y=analysis['Adj Close'], mode='lines', name='Adjusted Close'))
+            
+            fig.update_layout(title='Stock by Industry',
+                            xaxis_title='Date',
+                            yaxis_title='Adjusted',
+                            hovermode='x unified')
+            
+            # Display the interactive plot
+            st.plotly_chart(fig)
+        else:
+            st.write("No data available for this ticker.")
 
 # def Index():        
 #     page_bg_img = '''

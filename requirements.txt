@@ -11,4 +11,5 @@ tensorflow
 keras
 yahoofinancials  
 yahoo_fin 
-
+mpld3
+plotly.graph_objs
