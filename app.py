@@ -81,7 +81,7 @@ def main():
         # "Stock": Stock,
         "Index": Index,
         # 'Statement': Statement,
-        # 'Portfolio': Portfolio,
+        'Portfolio': Portfolio,
         # "Prediction_model": Prediction_model,
         # "Profit by Company": Profit,
         "IndustryAVG": IndustryAVG,
@@ -480,81 +480,247 @@ def Index():
         else:
             st.write("No data available for the selected stocks.")
 
-# #Portfolio
-# def Portfolio():
-#     page_bg_img = '''
-#     <style>
-#     .stApp {
-#     background-image: url("https://images.pexels.com/photos/1024613/pexels-photo-1024613.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=1000");
-#     background-size: cover;
-#     }
-#     </style>
-#     '''
-#     st.markdown(page_bg_img, unsafe_allow_html=True)
-#     symbols = 'https://raw.githubusercontent.com/Moly-malibu/AIApp/main/bxo_lmmS1.csv'
-#     df = pd.read_csv(symbols)
-#     st.markdown("<h1 style='text-align: center; color: #002967;'>Portfolio</h1>", unsafe_allow_html=True)
-#     st.write(""" Make your ***own Portfolio*** with 5 companies and analyze what will be your profit.""")
-#     st.write("""***Instructions:***""") 
-#     st.write(
-#         """
-#         - Select 5 companies where you want to invest or Analysis.  ('others' it needs more companies)  
+#Portfolio
+def Portfolio():
+    page_bg_img = '''
+    <style>
+    .stApp {
+    background-image: url("https://images.pexels.com/photos/1024613/pexels-photo-1024613.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=1000");
+    background-size: cover;
+    }
+    </style>
+    '''
+    st.markdown(page_bg_img, unsafe_allow_html=True)
+    symbols = 'https://raw.githubusercontent.com/Moly-malibu/AIApp/main/bxo_lmmS1.csv'
+    df = pd.read_csv(symbols)
+    st.markdown("<h1 style='text-align: center; color: #002967;'>Portfolio</h1>", unsafe_allow_html=True)
+    st.write(""" Make your ***own Portfolio*** with 5 companies and analyze what will be your profit.""")
+    st.write("""***Instructions:***""") 
+    st.write(
+        """
+        - Select 5 companies where you want to invest or Analysis.  ('others' it needs more companies)  
 
-#         - Select Date.
-#         ---
-#         """)
+        - Select Date.
+        ---
+        """)
     
-#     stockStarData = st.sidebar.date_input("Select Date when you started to investing:")
-#     company = tickerSymbol1 = st.multiselect("Select Companies to create the Portfolio", (df['Symbol']))
-#     button_clicked = st.sidebar.button("GO")
-#     if company:
-#         def getmyportfolio(stock=tickerSymbol1, start=stockStarData, end=None):
-#             numAssets = len(tickerSymbol1)
-#             st.write('***you have*** ' +str(numAssets) + ' ***Assets in your Portafolio.***')
-#             data = yf.download(tickerSymbol1, start=start, end=end)['Adj Close']
-#             return data
-#         my_stocks = getmyportfolio(tickerSymbol1)
-#         st.write(my_stocks)
-#         daily_return = my_stocks.pct_change(1)
-#         daily_return.corr()
-#         daily_return.cov()
-#         daily_return.var()
-#         daily_return.std()
-#         st.write('***Stock Return ***',daily_return)
-#         st.write('***Stock Correlation ***',daily_return.corr())
-#         st.write('***Stock Covariance Matrix for Return***',daily_return.cov())
-#         st.write('***Stock Variance ***',daily_return.var())
-#         st.write('***Stock Volatility ***', daily_return.std())
-#     #Visualization
-#         plt.figure(figsize=(12, 4.5))
-#         for c in daily_return.columns.values:
-#             plt.plot(daily_return.index, daily_return[c], lw=2, label=c)
-#         plt.legend(loc='upper right', fontsize=10)
-#         plt.title('Volatility')
-#         plt.ylabel('Dayly Return')
-#         plt.xlabel('Date')
-#         plt.style.use('dark_background')
-#         st.set_option('deprecation.showPyplotGlobalUse', False)
-#         st.pyplot()
-#     #get Growth Investment
-#         dailyMeanSimpleReturns = daily_return.mean()
-#         st.write('***Daily Mean Simple Return:*** ', dailyMeanSimpleReturns)
-#         randomWeights = np.array([0.4, 0.1, 0.3, 0.1, 0.1])
-#         portfoliosimpleReturn = np.sum(dailyMeanSimpleReturns*randomWeights)
-#         st.write('***Daily Expected Portfolio Return:*** '+str(portfoliosimpleReturn))
-#         st.write('***Expected Annualised Portfolio Return:*** ' + str(portfoliosimpleReturn*253))
-#         dailyCumulSimpleReturn = (daily_return+1).cumprod()
-#         st.write('***Growth of Investment:*** ', dailyCumulSimpleReturn)
-#     #Visualization
-#         plt.figure(figsize=(12.2, 4.5))
-#         for c in dailyCumulSimpleReturn.columns.values:
-#             plt.plot(dailyCumulSimpleReturn.index, dailyCumulSimpleReturn[c], lw=2, label=c)
-#         plt.legend(loc='upper left', fontsize=10)
-#         plt.xlabel('Date')
-#         plt.ylabel('Growth fo $1 Investment')
-#         plt.title('Daily Cumulative Returns')
-#         st.set_option('deprecation.showPyplotGlobalUse', False)
-#         st.pyplot()
+    stockStarData = st.sidebar.date_input("Select Date when you started to investing:")
+    company = tickerSymbol1 = st.multiselect("Select Companies to create the Portfolio", (df['Symbol']))
+    button_clicked = st.sidebar.button("GO")
+    if company:
+        def getmyportfolio(stock=tickerSymbol1, start=stockStarData, end=None):
+            numAssets = len(tickerSymbol1)
+            st.write('***you have*** ' +str(numAssets) + ' ***Assets in your Portafolio.***')
+            data = yf.download(tickerSymbol1, start=start, end=end)['Adj Close']
+            return data
+        my_stocks = getmyportfolio(tickerSymbol1)
+        st.write(my_stocks)
+        daily_return = my_stocks.pct_change(1)
+        daily_return.corr()
+        daily_return.cov()
+        daily_return.var()
+        daily_return.std()
+        st.write('***Stock Return***',daily_return)
+        st.write('***Stock Correlation***',daily_return.corr())
+
+        # Calculate daily returns
+        daily_returns = my_stocks.pct_change()
+
+        # Calculate correlation matrix
+        correlation_matrix = daily_returns.corr()
+
+        # Display the correlation matrix as a heatmap
+        import seaborn as sns
+        st.subheader("Stock Correlation Heatmap")
+        
+        plt.figure(figsize=(10, 8))
+        sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt=".2f", linewidths=.5)
+        plt.title("Correlation Matrix of Selected Stocks")
+        
+        # Show the plot in Streamlit
+        st.pyplot(plt)
+    else:
+        st.write("Please enter valid stock tickers.")
+
+
+        st.write('***Stock Covariance Matrix for Return***',daily_return.cov())
+        st.write('***Stock Variance***',daily_return.var())
+        st.write('***Stock Volatility***', daily_return.std())
+    
+    #Visualization
+        # Load symbols from CSV (ensure 'symbols' is defined)
+    df = pd.read_csv(symbols)
+
+    st.markdown("<h1 style='text-align: center; color: #002967;'>Stock Price </h1>", unsafe_allow_html=True)
+
+    # Date input for analysis start date
+    start = st.sidebar.date_input("Enter Date Begin Analysis:")
+
+    # Select box for ticker symbols
+    tickerSymbol = st.sidebar.selectbox('Stocks Close and Volume price by Company', df['Symbol'].tolist())  # Ensure 'Symbol' is a column in df
+
+    # Fetching ticker data
+    tickerData = yf.Ticker(tickerSymbol)
+
+    # Fetch historical data starting from 'start'
+    tickerDf = tickerData.history(start=start)
+
+    # Display analysis header
+    st.write("# Analysis of Data")
+
+    # Check if DataFrame is not empty
+    if not tickerDf.empty:
+        # Create a candlestick chart using Plotly
+        fig = go.Figure(data=[go.Candlestick(x=tickerDf.index,
+                                            open=tickerDf['Open'],
+                                            high=tickerDf['High'],
+                                            low=tickerDf['Low'],
+                                            close=tickerDf['Close'])])
+
+        # Update layout of the chart
+        fig.update_layout(title=f'Candlestick Chart for {tickerSymbol}',
+                        xaxis_title='Date',
+                        yaxis_title='Price',
+                        xaxis_rangeslider_visible=False)
+
+        # Display the candlestick chart in Streamlit
+        st.plotly_chart(fig)
+    else:
+        st.write("No data available for this ticker symbol.")
+
+    #get Growth Investment
+
+        dailyMeanSimpleReturns = daily_return.mean()
+        # st.write('***Daily Mean Simple Return:*** ', dailyMeanSimpleReturns)
+        randomWeights = np.array([0.4, 0.1, 0.3, 0.1, 0.1])
+        portfoliosimpleReturn = np.sum(dailyMeanSimpleReturns*randomWeights)
+        # st.write('***Daily Expected Portfolio Return:*** '+str(portfoliosimpleReturn))
+        # st.write('***Expected Annualised Portfolio Return:*** ' + str(portfoliosimpleReturn*253))
+        dailyCumulSimpleReturn = (daily_return+1).cumprod()
+        # st.write('***Growth of Investment:*** ', dailyCumulSimpleReturn)
+    st.write("""***Daily Expected Portfolio Return and Expected Annualized Portfolio Return***""")
+    st.markdown(
+    """ 
+    When you have both the Daily Expected Portfolio Return and the Expected Annualized Portfolio Return, you can draw several conclusions about your investment portfolio. Here’s a breakdown of what these metrics imply and how they can guide your investment decisions:
+    Understanding Daily Expected Portfolio Return.
+
+    - ***Short-Term Performance***: The Daily Expected Portfolio Return gives you an estimate of how much return you can expect from your portfolio on a daily basis. This is useful for short-term trading strategies or for understanding daily fluctuations in your investment's value.
+    
+    - ***Volatility Assessment***: A higher daily expected return may indicate a more volatile portfolio, where returns can fluctuate significantly day-to-day. This can help you gauge the risk level associated with your investments.
+    Understanding Expected Annualized Portfolio Return
+   
+    - ***Long-Term Growth Projection***: The Expected Annualized Portfolio Return translates the daily returns into an annual figure, providing a more comprehensive view of potential growth over a year. This is crucial for long-term investment planning and assessing whether your portfolio aligns with your financial goals.
+    Comparison with Benchmarks: You can compare the expected annualized return against benchmarks (like market indices) to evaluate whether your portfolio is likely to outperform or underperform relative to the market.
+    
+    
+    ***Conclusions:***
+
+    - ***Risk vs. Reward***: If the daily expected return is significantly higher than the annualized return, it may indicate that while short-term gains could be substantial, the overall annual performance may not reflect that due to volatility or market conditions. This highlights the importance of understanding both short-term and long-term perspectives.
+    
+    - ***Investment Strategy Alignment***: If your expected annualized return meets or exceeds your investment goals (e.g., retirement savings, purchasing a home), it suggests that your current asset allocation and investment strategy are aligned with your financial objectives.
+    
+    - ***Portfolio Adjustments***: If the expected returns are lower than desired, consider rebalancing your portfolio by adjusting asset allocations, diversifying into higher-return assets, or exploring different investment strategies to enhance overall returns.
+    
+    - ***Performance Monitoring***: Regularly monitor both daily and annualized returns to assess whether your investments are performing as expected. This can help in making timely adjustments to mitigate losses or capitalize on gains.
+    
+    - ***Expectations Management***: Both metrics serve as reminders that investment returns are not guaranteed and are subject to market risks. They help set realistic expectations for future performance based on historical data and market conditions.
+    
+    - ***Example Calculation To illustrate***, if you have a Daily Expected Portfolio Return of 0.05% (or 5% annually) and an Expected Annualized Portfolio Return of 8%, this suggests:
+    Your investments are projected to grow at a reasonable rate annually. The daily return indicates potential for short-term gains, but you should consider whether this aligns with your risk tolerance and investment horizon.
+    
+    
+    - ***Conclusion***:
+
+    By analyzing both daily expected returns and annualized returns, you gain a comprehensive view of your portfolio's performance potential. This dual perspective aids in making informed decisions about risk management, portfolio adjustments, and aligning investments with long-term financial goals.
+
+
+    """)
+
+    #Visualization
+    # Calculate daily mean simple returns
+    dailyMeanSimpleReturns = daily_return.mean()
+    st.write('***Daily Mean Simple Return:*** ', dailyMeanSimpleReturns)
+
+    # Define random weights for the portfolio
+    randomWeights = np.array([0.4, 0.1, 0.3, 0.1, 0.1])
+    portfoliosimpleReturn = np.sum(dailyMeanSimpleReturns * randomWeights)
+    st.write('***Daily Expected Portfolio Return:*** ', portfoliosimpleReturn)
+
+    # Calculate expected annualized portfolio return
+    expectedAnnualizedReturn = portfoliosimpleReturn * 253  # Assuming 253 trading days in a year
+    st.write('***Expected Annualized Portfolio Return:*** ', expectedAnnualizedReturn)
+
+    # Calculate cumulative simple returns
+    dailyCumulSimpleReturn = (daily_return + 1).cumprod()
+    st.write('***Growth of Investment:*** ', dailyCumulSimpleReturn)
+
+    # Visualization with Matplotlib
+    # st.subheader("Matplotlib Visualization")
+
+    st.title("Cumulative Returns Visualization")
+
+    # Select the columns to plot
+    selected_columns = st.multiselect('Select Stocks', dailyCumulSimpleReturn.columns)
+
+    # Create the plot
+    fig, ax = plt.subplots(figsize=(10, 6))
+    for col in selected_columns:
+        ax.plot(dailyCumulSimpleReturn.index, dailyCumulSimpleReturn[col].cumprod(), label=col)
+
+    ax.set_xlabel('Date')
+    ax.set_ylabel('Cumulative Return')
+    ax.set_title('Cumulative Returns of Selected Stocks')
+    ax.legend()
+    ax.grid(True)
+
+    st.pyplot(fig)
+
+
+
+
+
+    plt.figure(figsize=(12.2, 6))
+    for c in dailyCumulSimpleReturn.columns.values:
+        plt.plot(dailyCumulSimpleReturn.index, dailyCumulSimpleReturn[c], lw=2, label=c)
+
+    plt.grid(True)
+    plt.legend(loc='upper left', fontsize=10)
+    plt.xlabel('Date', fontsize=12)
+    plt.ylabel('Growth of $1 Investment', fontsize=12)
+    plt.title('Daily Cumulative Returns', fontsize=14)
+
+    # Show the plot in Streamlit
+    st.pyplot()
+
+    # Visualization with Plotly
+    st.subheader("Plotly Visualization")
+    fig = go.Figure()
+
+    for c in dailyCumulSimpleReturn.columns.values:
+        fig.add_trace(go.Scatter(x=dailyCumulSimpleReturn.index,
+                                y=dailyCumulSimpleReturn[c],
+                                mode='lines+markers',
+                                name=c))
+
+    fig.update_layout(title='Daily Cumulative Returns',
+                    xaxis_title='Date',
+                    yaxis_title='Growth of $1 Investment',
+                    legend_title='Stocks',
+                    template='plotly_white')  # Clean template
+
+    # Display the interactive plot in Streamlit
+    st.plotly_chart(fig)  # Use st.plotly_chart() for Plotly figures only
+
+
+
+    # plt.figure(figsize=(12.2, 4.5))
+    # for c in dailyCumulSimpleReturn.columns.values:
+    #         plt.plot(dailyCumulSimpleReturn.index, dailyCumulSimpleReturn[c], lw=2, label=c)
+    # plt.legend(loc='upper left', fontsize=10)
+    # plt.xlabel('Date')
+    # plt.ylabel('Growth fo $1 Investment')
+    # plt.title('Daily Cumulative Returns')
+    # st.pyplot()
 
 # # #Differente models to predict the price.
 # def Prediction_model():
