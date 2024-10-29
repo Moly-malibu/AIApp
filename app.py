@@ -79,7 +79,7 @@ def main():
     pages = {
         "Home": Home,
         # "Stock": Stock,
-        # "Index": Index,
+        "Index": Index,
         # 'Statement': Statement,
         # 'Portfolio': Portfolio,
         # "Prediction_model": Prediction_model,
@@ -374,54 +374,111 @@ def IndustryAVG():
 
         ---
         """)
+import plotly.graph_objs as go
 
-# def Index():        
-#     page_bg_img = '''
-#     <style>
-#     .stApp {
-#     background-image: url("https://img.freepik.com/free-photo/3d-geometric-abstract-cuboid-wallpaper-background_1048-9891.jpg?size=626&ext=jpg&ga=GA1.2.635976572.1603931911");
-#     background-size: cover;
-#     }
-#     </style>
-#     '''
-#     st.markdown(page_bg_img, unsafe_allow_html=True)
-#     symbols = 'https://raw.githubusercontent.com/Moly-malibu/AIApp/main/bxo_lmmS1.csv'
-#     df = pd.read_csv(symbols)
-#     st.markdown("<h1 style='text-align: center; color: #002967;'>Stock Price </h1>", unsafe_allow_html=True)
-#     start = st.sidebar.date_input("Enter Date Begin Analysis: ") 
-#     tickerSymbol = st.sidebar.selectbox('Stocks Close and Volume price by Company', (df))
-#     tickerData = yf.Ticker(tickerSymbol)
-#     tickerDf = tickerData.history(period='id', start=start, end=None)
-#     st.write("""# Analysis of Data""")
-#     st.write("""
-#     ## Closing Price
+def Index():        
+    page_bg_img = '''
+    <style>
+    .stApp {
+    background-image: url("https://img.freepik.com/free-photo/3d-geometric-abstract-cuboid-wallpaper-background_1048-9891.jpg?size=626&ext=jpg&ga=GA1.2.635976572.1603931911");
+    background-size: cover;
+    }
+    </style>
+    '''
+    st.markdown(page_bg_img, unsafe_allow_html=True)
+    symbols = 'https://raw.githubusercontent.com/Moly-malibu/AIApp/main/bxo_lmmS1.csv'
+    # Load symbols from CSV
+    df = pd.read_csv(symbols)
 
-#     """)
-#     company = yf.Ticker(tickerSymbol)
-#     st.write('Web:', company.info["website"])
-#     st.line_chart(tickerDf.Close)
-#     st.write(""" 
-#     ## Volume Price
-#     """)
-#     st.line_chart(tickerDf.Volume)
-#     st.markdown("<h1 style='text-align: center; color: #002967;'>Stock Price Compared</h1>", unsafe_allow_html=True)
-#     st.write("""
-#     **Business** and **Techology** are two fills that have changed the world, both occupy the main ratings in finance, being one of the most highly valued in the stock market leading their owners to be billionaires, in this simple application we can analyze the stock movement and prediction of future price of stock used algoriths and Machile Learning.
-#     Show are the Stock **Closing Price** and ** Volume** of Stocks by year!
-#     """)
-#     st.markdown('Help to take algoritmc decision about stocks')
-#     company = tickerSymbol1 = st.sidebar.multiselect("Select Companies Stock be compared", (df))
-#     if company:
-#         st.subheader("""**Compared Status**""")
-#         button_clicked = st.sidebar.button("GO")
-#         analysis = yf.download(tickerSymbol1, start=start, end=None)
-#         st.write('Analysis', analysis)
-#         analysis['Adj Close'].plot()
-#         plt.xlabel("Date")
-#         plt.ylabel("Adjusted")
-#         plt.title("Company Stock")
-#         st.set_option('deprecation.showPyplotGlobalUse', False)
-#         st.pyplot()
+    st.markdown("<h1 style='text-align: center; color: #002967;'>Stock Price </h1>", unsafe_allow_html=True)
+    
+    # Date input for analysis start date
+    start = st.sidebar.date_input("Enter Date Begin Analysis:")
+
+    # Select box for ticker symbols
+    tickerSymbol = st.sidebar.selectbox('Stocks Close and Volume price by Company', df['Symbol'].tolist())  # Ensure 'Symbol' is a column in df
+    
+    # Fetching ticker data
+    tickerData = yf.Ticker(tickerSymbol)
+
+    # Fetch historical data starting from 'start'
+    tickerDf = tickerData.history(start=start)
+
+    # Display analysis header
+    st.write("# Analysis of Data")
+
+    # Check if DataFrame is not empty
+    if not tickerDf.empty:
+        # Displaying closing prices
+        st.write("## Closing Prices")
+        st.line_chart(tickerDf['Close'])
+    else:
+        st.write("No data available for this ticker symbol.")
+
+    company = yf.Ticker(tickerSymbol)
+    st.write('Company name and Web:', company.info["website"])
+    # st.line_chart(tickerDf.Close)
+    st.write(""" 
+    ## Volume Price
+    """)
+    st.line_chart(tickerDf.Volume)
+    st.write(tickerDf)
+    st.markdown("<h1 style='text-align: center; color: #002967;'>Stock Price Compared</h1>", unsafe_allow_html=True)
+    st.write("""
+    **Business** and **Techology** are two fills that have changed the world, both occupy the main ratings in finance, being one of the most highly valued in the stock market leading their owners to be billionaires, in this simple application we can analyze the stock movement and prediction of future price of stock used algoriths and Machile Learning.
+    Show are the Stock **Closing Price** and ** Volume** of Stocks by year!
+    """)
+    st.markdown('Help to take algoritmc decision about stocks')
+    company = tickerSymbol1 = st.sidebar.multiselect("Select Companies Stock be compared", (df))
+
+        # Sidebar for selecting companies
+    company = st.sidebar.multiselect("Select Companies Stock to be compared", (df))
+
+    if company:
+        st.subheader("**Compared Status**")
+        button_clicked = st.sidebar.button("GO")
+        
+        # Downloading data
+        tickerDf = yf.download(company, start=start, end=None)
+        
+        # Check if data is available
+        if not tickerDf.empty:
+            # Create a Plotly figure
+            fig = go.Figure()
+            
+            # Add traces for each selected company
+            for ticker in company:
+                fig.add_trace(go.Scatter(x=tickerDf.index, 
+                                        y=tickerDf['Adj Close'][ticker], 
+                                        mode='lines', 
+                                        name=ticker))
+
+            # Update layout with titles and labels
+            fig.update_layout(title='Company Stock Comparison',
+                            xaxis_title='Date',
+                            yaxis_title='Adjusted Close Price',
+                            legend_title='Companies',
+                            hovermode='x unified')
+            
+            # Display the interactive plot
+            st.plotly_chart(fig)
+
+            # Volume chart (optional)
+            volume_fig = go.Figure()
+            for ticker in company:
+                volume_fig.add_trace(go.Bar(x=tickerDf.index, 
+                                            y=tickerDf['Volume'][ticker], 
+                                            name=ticker))
+            
+            volume_fig.update_layout(title='Trading Volume Comparison',
+                                    xaxis_title='Date',
+                                    yaxis_title='Volume',
+                                    barmode='stack')
+            
+            st.plotly_chart(volume_fig)
+            
+        else:
+            st.write("No data available for the selected stocks.")
 
 # #Portfolio
 # def Portfolio():
