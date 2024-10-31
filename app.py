@@ -57,6 +57,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib import style
 import plotly.graph_objs as go
+import plotly.express as px
 style.use('ggplot')
 
 st.markdown("<h1 style='text-align: center; color: #002967;'>Revolutionize Your Investments:</h1>", unsafe_allow_html=True)
