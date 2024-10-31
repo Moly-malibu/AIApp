@@ -14,3 +14,5 @@ yahoo_fin
 mpld3
 plotly.graph_objs
 bs4
+os
+yahoo_fin

@@ -2,34 +2,31 @@
 #base
 import streamlit as st
 import streamlit.components.v1 as components
+
 import pandas as pd
+from pandas.core.reshape.merge import merge
+from pandas._config.config import reset_option
+from pandas.core import groupby
+
+from requests.api import options 
+
+import numpy
+import numpy as np
+from re import sub
 
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 import sys
 
-#Index
-import numpy
-# from numpy.lib.shape_base import column_stack
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-
 import requests
 from requests import get
 from bs4 import BeautifulSoup
 
-#Profit
-# import line_profiler
-# profile = line_profiler.LineProfiler()
-# from ydata_profiling import ProfileReport
-# from streamlit_pandas_profiling import st_profile_report
-# from pandas_profiling.utils.cache import cache_file
-
-#Portfolio
-import numpy as np
 #import yfinance 
 import yfinance as yf 
-# yf.pdr_override()
+from yahoofinancials import YahooFinancials
+from yahoo_fin import stock_info as si
+from yahoo_fin import options as ops
 plt.style.use('fivethirtyeight')
 
 #Prediction
@@ -42,40 +39,25 @@ from sklearn.model_selection import train_test_split
 from sklearn.svm import SVR
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 
-import tensorflow as tf
-from tensorflow.python.keras.layers import Dense, Flatten, Conv2D
-from tensorflow.python.keras import Model
-tf.keras.models.Model()
+from bs4 import BeautifulSoup
 
 import keras
-# from keras.layers import Dense, LSTM
-from bs4 import BeautifulSoup
-from tensorflow.python.keras.models import Sequential
+tf.keras.models.Model()
+import tensorflow as tf
 from tensorflow import keras
+from tensorflow.python.keras.layers import Dense, Flatten, Conv2D
+from tensorflow.python.keras import Model
+from tensorflow.python.keras.models import Sequential
 from tensorflow.python.keras import layers
-# import tensorflow.python.compat.v1 
 tf.compat.v1.get_default_graph()
 
-#statement
-from re import sub
-from pandas.core.reshape.merge import merge
-from yahoofinancials import YahooFinancials
-# from yahoo_fin.stock_info import get_data
-# import yahoo_fin.options as ops
-# import yahoo_fin.stock_info as si
 
-
+#visualization
+import matplotlib as mpl
+import matplotlib.pyplot as plt
 from matplotlib import style
 import plotly.graph_objs as go
 style.use('ggplot')
-
-#Stocks
-# from numpy.lib.shape_base import split
-from pandas._config.config import reset_option
-from pandas.core import groupby
-from requests.api import options 
-
-
 
 st.markdown("<h1 style='text-align: center; color: #002967;'>Revolutionize Your Investments:</h1>", unsafe_allow_html=True)
 st.markdown("<h1 style='text-align: center; color: #002967;'>AI-Driven Financial Insights</h1>", unsafe_allow_html=True)
@@ -85,7 +67,7 @@ def main():
         "Home": Home,
         # "Stock": Stock,
         "Index": Index,
-        # 'Statement': Statement,
+        'Statement': Statement,
         'Portfolio': Portfolio,
         # "Prediction": Prediction,
         # "Profit by Company": Profit,
@@ -973,172 +955,192 @@ def Portfolio():
 #     profile = ProfileReport(analysis, explorative=True)
 #     st_profile_report(profile)    
 
-# def Statement():
-#     page_bg_img = '''
-#     <style>
-#     .stApp{
-#     background-image: url("https://images.pexels.com/photos/950241/pexels-photo-950241.jpeg?cs=srgb&dl=pexels-gdtography-950241.jpg&fm=jpg");
-#     background-size: cover;
-#     }
-#     </style>
-#     '''
-#     st.markdown(page_bg_img, unsafe_allow_html=True)
-#     st.markdown("<h1 style='text-align: center; color: #002966;'>Statement</h1>", unsafe_allow_html=True)
-#     symbols = 'https://raw.githubusercontent.com/Moly-malibu/AIApp/main/bxo_lmmS1.csv'
-#     df = pd.read_csv(symbols)
-#     ticker = st.sidebar.selectbox('Stocks by Company', (df))
-#     tickerData = YahooFinancials(ticker)
-#     company = yf.Ticker(ticker)
-#     # st.write(company.info)
-#     st.write('Web:', company.info["website"])
-#     company_general = st.sidebar.checkbox("Financial Ratio")
-#     if company_general:
-#         st.markdown("<h1 style='text-align: center; color: #002966;'>Financial Ratios</h1>", unsafe_allow_html=True)
-#         st.write('***Payout Ratio:*** ', company.info["payoutRatio"])
-#         st.write('***Trailing Annual Dividend Yield:*** ', company.info["trailingAnnualDividendYield"])
-#         st.write('***Dividend Rate:*** ', company.info["dividendRate"])
-#         st.write('***Profit Margins: ***', company.info["profitMargins"])
-#         st.write('***Peg Ratio: ***', company.info["pegRatio"])
-#         yahoo_financials = YahooFinancials(ticker)
-#         marketcap = yahoo_financials.get_market_cap()
-#         price_to_sales = yahoo_financials.get_current_price()
-#         dividend_yield = yahoo_financials.get_dividend_yield()
-#         # income_balance=si.get_income_statement(ticker)
-#         # transpose_income=income_balance.transpose()
-#         # balance_income=si.get_balance_sheet(ticker)
-#         # transpose_balance=balance_income.transpose()
-#         st.write("""**Dividends**""", company.dividends) 
-        # income=si.get_income_statement(ticker)
-        # transpose=income.transpose()
-        # interest_coverage1 = transpose['operatingIncome'] 
-        # interest_coverage2 = transpose['interestExpense']
-        # st.write('***Interest Coverage:*** Operating Income / interest Expenses', interest_coverage1/interest_coverage2)
-        # gross_profit_margin1 = transpose['totalRevenue'] 
-        # gross_profit_margin2 = transpose['costOfRevenue']
-        # st.write('***Gross Profit Margin:*** Total Revenue / Gross Profit Margin',(gross_profit_margin1-gross_profit_margin2)/gross_profit_margin1)
-        # # balance=si.get_balance_sheet(ticker)
-        # # transpose=balance.transpose()
-        # current_ratio1 = transpose['totalCurrentAssets'] 
-        # current_ratio2 = transpose['totalCurrentLiabilities']
-        # debt_to_assets1 = transpose['otherCurrentAssets'] 
-        # debt_to_assets2 = transpose['totalAssets']
-        # st.write('***Debit Assets:*** Total Debit / Total Assets', (debt_to_assets1/debt_to_assets2))
-        # debt_to_equity1 = transpose['otherCurrentAssets'] 
-        # debt_to_equity2 = transpose['totalStockholderEquity']
-        # st.write('***Debit to Equity:*** Total Debit / Total Stock Holders Equity', (debt_to_equity1/debt_to_equity2))
-        # ROE1 = transpose_income['netIncome'] 
-        # ROE2 = transpose_balance['totalStockholderEquity']
-        # st.write('***Return On Equity ROE:*** Net Income / (Total Stock Holder Equity + Total Stock Holder Equity)/2',(ROE1/((ROE2+ROE2)/2)))
-        # ROA1 = transpose_income['netIncome'] 
-        # ROA2 = transpose_balance['totalAssets']
-        # st.write('***Return On Assets:*** Net Income / Total Assets',(ROA1/ROA2))
+def Statement():
+    page_bg_img = '''
+    <style>
+    .stApp{
+    background-image: url("https://images.pexels.com/photos/950241/pexels-photo-950241.jpeg?cs=srgb&dl=pexels-gdtography-950241.jpg&fm=jpg");
+    background-size: cover;
+    }
+    </style>
+    '''
+    st.markdown(page_bg_img, unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align: center; color: #002966;'>Statement</h1>", unsafe_allow_html=True)
+    symbols = 'https://raw.githubusercontent.com/Moly-malibu/AIApp/main/bxo_lmmS1.csv'
+    df = pd.read_csv(symbols)
 
-#     company_simulation = st.sidebar.checkbox("Monte Carlo Simulation")
-#     if company_simulation:
-#         st.markdown("<h1 style='text-align: center; color: #002966;'>Monte Carlo Simulation Price</h1>", unsafe_allow_html=True)
-#         st.write("""Monte Carlo Simulation project future price for the stocks. """)
-#         yahoo_financials = YahooFinancials(ticker)
-#         price = yahoo_financials.get_current_price()
-#         st.write('***Current Price:***', price)
-#         marketcap = yahoo_financials.get_market_cap()
-#         st.write('***Market Capital***', marketcap)
-#         # income_balance=si.get_income_statement(ticker)
-#         # transpose_income=income_balance.transpose()
-#         # revenue = transpose_income['totalRevenue'] 
-#         # st.write('***Price to sales:*** (Market Capital / Revenue', marketcap/revenue)
-#         # price_to_earnings = transpose_income['netIncome'] 
-#         # st.write('***Price to Earnings:*** (Market Capital/ Net Income', marketcap/price_to_earnings)
-#         # balance_income=si.get_balance_sheet(ticker)
-#         # transpose_balance=balance_income.transpose()
-#         # price_to_book = transpose_balance['totalStockholderEquity']
-#         # st.write('***Price to book:*** (marketcap/Total Stock Holders Equity', marketcap/price_to_book)
-#         start = st.date_input("Please enter date begin Analysis: ")
-#         price = yf.download(ticker, start=start, end=None)['Close']
-#         returns = price.pct_change()
-#         last_price = price[-1]
-#         num_simulations = 1000
-#         num_days = 252
-#         num_simulations_df = pd.DataFrame()
-#         for x in range(num_simulations):
-#             count = 0
-#             daily_vol = returns.std()
-#             price_series = []
-#             price = last_price*(1+np.random.normal(0,daily_vol))
-#             price_series.append(price)
-#             for y in range(num_days):
-#                 if count == 251:
-#                     break
-#                 price = price_series[count] * (1+np.random.normal(0,daily_vol))
-#                 price_series.append(price)
-#                 count +=1
-#             num_simulations_df[x] = price_series
+    ticker = st.sidebar.selectbox('Stocks by Company', (df))
+    tickerData = YahooFinancials(ticker)
+    company = yf.Ticker(ticker)
+    # st.write(company.info)
+    st.write('Company Web:', company.info["website"])
+    company_general = st.sidebar.checkbox("Financial Ratio")
+    if company_general:
 
-#         # fig = plt.figure()
-#         # plt.title('Monte Carlo Simulation')
-#         # plt.plot(num_simulations_df)
-#         # plt.axhline(y=last_price, color='r', linestyle='-')
-#         # plt.xlabel('Day')
-#         # plt.ylabel('Price')
-#         # st.set_option('deprecation.showPyplotGlobalUse', False)
-#         # st.pyplot()
-#         st.write('Price Series Predict: ', num_simulations_df)
-#     # company_general = st.sidebar.checkbox("Quick_Ratio")
-#     # if company_general:
-#     #     st.subheader("""**Quick Ratio**""")
-#     #     balance=si.get_balance_sheet(ticker)
-#     #     transpose=balance.transpose()
-#     #     quick_ratio1 = transpose['otherCurrentAssets'] 
-#     #     quick_ratio2 = transpose['inventory'] 
-#     #     quick_ratio3 = transpose['otherCurrentLiab']
-#     #     quick_ratio = ((quick_ratio1-quick_ratio2)/quick_ratio3)
-#     #     if not quick_ratio2:
-#     #         st.write("No data available")
-#     #     else:
-#     #         st.write('(***Quick Ratio:*** CurrentAssets - Inventory)/Current Liabilities)', (quick_ratio1-quick_ratio2)/quick_ratio3)
-#     # company_hist = st.sidebar.checkbox("Cash Flow")
-#     # if company_hist:
-#     #         st.markdown("<h1 style='text-align: center; color: #002966;'>Cash Flow</h1>", unsafe_allow_html=True)
-#     #         display_cash = si.get_cash_flow(ticker)
-#     #         if display_cash.empty == True:
-#     #             st.write("No data available")
-#     #         else:
-#     #             st.write(display_cash)
-#     # company_hist = st.sidebar.checkbox("Income Statement")
-#     # if company_hist:
-#     #         st.markdown("<h1 style='text-align: center; color: #002966;'>Income Statement</h1>", unsafe_allow_html=True)
-#     #         display_income_stat = si.get_income_statement(ticker)
-#     #         if display_income_stat.empty == True:
-#     #             st.write("No data available")
-#     #         else:
-#     #             st.write(display_income_stat)
-#     # company_hist = st.sidebar.checkbox("Balance Sheet")
-#     # if company_hist:
-#     #         st.markdown("<h1 style='text-align: center; color: #002966;'>Balance Sheet</h1>", unsafe_allow_html=True)
-#     #         display_balance = si.get_balance_sheet(ticker)
-#     #         if display_balance.empty == True:
-#     #             st.write("No data available")
-#     #         else:
-#     #             st.write(display_balance)
-#     company_hist = st.sidebar.checkbox("Quote Table")
-#     # if company_hist:
-#     #         st.markdown("<h1 style='text-align: center; color: #002966;'>Quote Table</h1>", unsafe_allow_html=True)
-#     #         display_table = si.get_quote_table(ticker, dict_result=False)
-#     #         if display_table.empty == True:
-#     #             st.write("No data available")
-#     #         else:
-#     #             st.write(display_table)
-#     #         quote_table = si.get_quote_table(ticker)
-#     #         t = quote_table["Forward Dividend & Yield"]
-#     #         st.write('Forward Dividend & Yield:', t)
-#     #         display_capital = si.get_quote_table(ticker)["Market Cap"]
-#     #         st.write('Market Capital', display_capital)     
-#     company_hist = st.sidebar.checkbox("Call Option")
-#     # if company_hist:
-#     #         st.markdown("<h1 style='text-align: center; color: #002966;'>Call Option</h1>", unsafe_allow_html=True)
-#     #         c= ops.get_calls(ticker)
-#     #         transpose = c.transpose() 
-#     #         st.write(transpose) 
-#         # ...
+        st.markdown("<h1 style='text-align: center; color: #002966;'>Financial Ratios</h1>", unsafe_allow_html=True)
+        st.write('***Payout Ratio:*** ', company.info["payoutRatio"])
+        st.write('***Trailing Annual Dividend Yield:*** ', company.info["trailingAnnualDividendYield"])
+        st.write('***Dividend Rate:***', company.info["dividendRate"])
+        st.write('***Profit Margins:***', company.info["profitMargins"])
+        st.write('***Peg Ratio:***', company.info["pegRatio"])
+
+        yahoo_financials = YahooFinancials(ticker)
+        marketcap = yahoo_financials.get_market_cap()
+        price_to_sales = yahoo_financials.get_current_price()
+        dividend_yield = yahoo_financials.get_dividend_yield()
+        income_balance=si.get_income_statement(ticker) # type: ignore
+        transpose_income=income_balance.transpose()
+        balance_income=si.get_balance_sheet(ticker) # type: ignore
+        transpose_balance=balance_income.transpose()
+
+        st.write("""**Dividends**""", company.dividends) 
+
+        income=si.get_income_statement(ticker) # type: ignore
+        transpose=income.transpose()
+        interest_coverage1 = transpose['operatingIncome'] 
+        interest_coverage2 = transpose['interestExpense']
+        st.write('***Interest Coverage:*** Operating Income / interest Expenses', interest_coverage1/interest_coverage2)
+
+        gross_profit_margin1 = transpose['totalRevenue'] 
+        gross_profit_margin2 = transpose['costOfRevenue']
+        st.write('***Gross Profit Margin:*** Total Revenue / Gross Profit Margin',(gross_profit_margin1-gross_profit_margin2)/gross_profit_margin1)
+
+        balance=si.get_balance_sheet(ticker)
+        transpose=balance.transpose()
+        current_ratio1 = transpose['totalCurrentAssets'] 
+        current_ratio2 = transpose['totalCurrentLiabilities']
+        debt_to_assets1 = transpose['otherCurrentAssets'] 
+        debt_to_assets2 = transpose['totalAssets']
+        st.write('***Debit Assets:*** Total Debit / Total Assets', (debt_to_assets1/debt_to_assets2))
+
+        debt_to_equity1 = transpose['otherCurrentAssets'] 
+        debt_to_equity2 = transpose['totalStockholderEquity']
+        st.write('***Debit to Equity:*** Total Debit / Total Stock Holders Equity', (debt_to_equity1/debt_to_equity2))
+
+        ROE1 = transpose_income['netIncome'] 
+        ROE2 = transpose_balance['totalStockholderEquity']
+        st.write('***Return On Equity ROE:*** Net Income / (Total Stock Holder Equity + Total Stock Holder Equity)/2',(ROE1/((ROE2+ROE2)/2)))
+
+        ROA1 = transpose_income['netIncome'] 
+        ROA2 = transpose_balance['totalAssets']
+        st.write('***Return On Assets:*** Net Income / Total Assets',(ROA1/ROA2))
+
+    company_simulation = st.sidebar.checkbox("Monte Carlo Simulation")
+    if company_simulation:
+        st.markdown("<h1 style='text-align: center; color: #002966;'>Monte Carlo Simulation Price</h1>", unsafe_allow_html=True)
+        st.write("""Monte Carlo Simulation project future price for the stocks. """)
+        yahoo_financials = YahooFinancials(ticker)
+        price = yahoo_financials.get_current_price()
+        st.write('***Current Price:***', price)
+
+        marketcap = yahoo_financials.get_market_cap()
+        st.write('***Market Capital***', marketcap)
+
+        income_balance=si.get_income_statement(ticker)
+        transpose_income=income_balance.transpose()
+        revenue = transpose_income['totalRevenue'] 
+        st.write('***Price to sales:*** (Market Capital / Revenue', marketcap/revenue)
+
+        price_to_earnings = transpose_income['netIncome'] 
+        st.write('***Price to Earnings:*** (Market Capital/ Net Income', marketcap/price_to_earnings)
+
+        balance_income=si.get_balance_sheet(ticker)
+        transpose_balance=balance_income.transpose()
+        price_to_book = transpose_balance['totalStockholderEquity']
+        st.write('***Price to book:*** (marketcap/Total Stock Holders Equity', marketcap/price_to_book)
+
+
+        start = st.date_input("Please enter date begin Analysis: ")
+        price = yf.download(ticker, start=start, end=None)['Close']
+        returns = price.pct_change()
+        last_price = price[-1]
+        num_simulations = 1000
+        num_days = 252
+        num_simulations_df = pd.DataFrame()
+        for x in range(num_simulations):
+            count = 0
+            daily_vol = returns.std()
+            price_series = []
+            price = last_price*(1+np.random.normal(0,daily_vol))
+            price_series.append(price)
+            for y in range(num_days):
+                if count == 251:
+                    break
+                price = price_series[count] * (1+np.random.normal(0,daily_vol))
+                price_series.append(price)
+                count +=1
+            num_simulations_df[x] = price_series
+
+        fig = plt.figure()
+        plt.title('Monte Carlo Simulation')
+        plt.plot(num_simulations_df)
+        plt.axhline(y=last_price, color='r', linestyle='-')
+        plt.xlabel('Day')
+        plt.ylabel('Price')
+        st.set_option('deprecation.showPyplotGlobalUse', False)
+        st.pyplot()
+        st.write('Price Series Predict: ', num_simulations_df)
+
+    company_general = st.sidebar.checkbox("Quick_Ratio")
+    if company_general:
+        st.subheader("""**Quick Ratio**""")
+        balance=si.get_balance_sheet(ticker)
+        transpose=balance.transpose()
+        quick_ratio1 = transpose['otherCurrentAssets'] 
+        quick_ratio2 = transpose['inventory'] 
+        quick_ratio3 = transpose['otherCurrentLiab']
+        quick_ratio = ((quick_ratio1-quick_ratio2)/quick_ratio3)
+        if not quick_ratio2:
+            st.write("No data available")
+        else:
+            st.write('(***Quick Ratio:*** CurrentAssets - Inventory)/Current Liabilities)', (quick_ratio1-quick_ratio2)/quick_ratio3)
+
+    company_hist = st.sidebar.checkbox("Cash Flow")
+    if company_hist:
+            st.markdown("<h1 style='text-align: center; color: #002966;'>Cash Flow</h1>", unsafe_allow_html=True)
+            display_cash = si.get_cash_flow(ticker)
+            if display_cash.empty == True:
+                st.write("No data available")
+            else:
+                st.write(display_cash)
+    company_hist = st.sidebar.checkbox("Income Statement")
+    if company_hist:
+            st.markdown("<h1 style='text-align: center; color: #002966;'>Income Statement</h1>", unsafe_allow_html=True)
+            display_income_stat = si.get_income_statement(ticker)
+            if display_income_stat.empty == True:
+                st.write("No data available")
+            else:
+                st.write(display_income_stat)
+    company_hist = st.sidebar.checkbox("Balance Sheet")
+    if company_hist:
+            st.markdown("<h1 style='text-align: center; color: #002966;'>Balance Sheet</h1>", unsafe_allow_html=True)
+            display_balance = si.get_balance_sheet(ticker)
+            if display_balance.empty == True:
+                st.write("No data available")
+            else:
+                st.write(display_balance)
+
+    company_hist = st.sidebar.checkbox("Quote Table")
+    if company_hist:
+            st.markdown("<h1 style='text-align: center; color: #002966;'>Quote Table</h1>", unsafe_allow_html=True)
+            display_table = si.get_quote_table(ticker, dict_result=False)
+            if display_table.empty == True:
+                st.write("No data available")
+            else:
+                st.write(display_table)
+            quote_table = si.get_quote_table(ticker)
+            t = quote_table["Forward Dividend & Yield"]
+            st.write('Forward Dividend & Yield:', t)
+            display_capital = si.get_quote_table(ticker)["Market Cap"]
+            st.write('Market Capital', display_capital)    
+
+    company_hist = st.sidebar.checkbox("Call Option")
+    if company_hist:
+            st.markdown("<h1 style='text-align: center; color: #002966;'>Call Option</h1>", unsafe_allow_html=True)
+            c= ops.get_calls(ticker)
+            transpose = c.transpose() 
+            st.write(transpose) 
+        # ...
 
 # def Stock():
 #     page_bg_img = """
@@ -1225,5 +1227,6 @@ def Portfolio():
 #     #             st.write("No data available")
 #     #         else:
 #     #             st.write(display_evaluation)
+
 if __name__ == "__main__":
    main()
