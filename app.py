@@ -4,18 +4,23 @@ import streamlit as st
 import streamlit.components.v1 as components
 import pandas as pd
 
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+import sys
+
 #Index
 import numpy
 # from numpy.lib.shape_base import column_stack
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-from datetime import datetime
-import datetime
+
 import requests
 from requests import get
 from bs4 import BeautifulSoup
 
 #Profit
+# import line_profiler
+# profile = line_profiler.LineProfiler()
 # from ydata_profiling import ProfileReport
 # from streamlit_pandas_profiling import st_profile_report
 # from pandas_profiling.utils.cache import cache_file
@@ -37,10 +42,6 @@ from sklearn.model_selection import train_test_split
 from sklearn.svm import SVR
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 
-import os
-import sys
-
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 import tensorflow as tf
 from tensorflow.python.keras.layers import Dense, Flatten, Conv2D
 from tensorflow.python.keras import Model
@@ -62,7 +63,10 @@ from yahoofinancials import YahooFinancials
 # from yahoo_fin.stock_info import get_data
 # import yahoo_fin.options as ops
 # import yahoo_fin.stock_info as si
+
+
 from matplotlib import style
+import plotly.graph_objs as go
 style.use('ggplot')
 
 #Stocks
@@ -70,7 +74,8 @@ style.use('ggplot')
 from pandas._config.config import reset_option
 from pandas.core import groupby
 from requests.api import options 
-import os
+
+
 
 st.markdown("<h1 style='text-align: center; color: #002967;'>Revolutionize Your Investments:</h1>", unsafe_allow_html=True)
 st.markdown("<h1 style='text-align: center; color: #002967;'>AI-Driven Financial Insights</h1>", unsafe_allow_html=True)
@@ -82,7 +87,7 @@ def main():
         "Index": Index,
         # 'Statement': Statement,
         'Portfolio': Portfolio,
-        # "Prediction_model": Prediction_model,
+        # "Prediction": Prediction,
         # "Profit by Company": Profit,
         "IndustryAVG": IndustryAVG,
         # "Profit by Industry": ProfitIndustry,
@@ -158,7 +163,7 @@ def Home():
 
         ---
         """)
-        today = st.date_input('Today is', datetime.datetime.now())
+        # today = st.date_input('Today is', datetime.datetime.now())
 
         footer_temp1 = """
 
@@ -268,8 +273,6 @@ def IndustryAVG():
         else:
             st.write("No data available for this ticker.")
 
-    import plotly.graph_objs as go
-
     if company:
         st.subheader("**Compared Status**")
         # button_clicked = st.sidebar.button("GO")
@@ -370,11 +373,9 @@ def IndustryAVG():
         By comparing the DJI with TYX and N225, investors can gain a comprehensive view of market dynamics, economic expectations, and global trends. This analysis helps in making informed investment decisions based on varying factors influencing stock and bond markets across different regions.
 
 
-
-
         ---
         """)
-import plotly.graph_objs as go
+
 
 def Index():        
     page_bg_img = '''
@@ -668,7 +669,7 @@ def Portfolio():
     ax.legend()
     ax.grid(True)
     st.pyplot(fig)
-    pu
+    
     plt.figure(figsize=(12.2, 6))
     for c in dailyCumulSimpleReturn.columns.values:
         plt.plot(dailyCumulSimpleReturn.index, dailyCumulSimpleReturn[c], lw=2, label=c)
@@ -683,7 +684,7 @@ def Portfolio():
     st.pyplot()
 
     # Visualization with Plotly
-    st.subheader("Plotly Visualization")
+    st.subheader("Dayly Cumulative Return")
     fig = go.Figure()
 
     for c in dailyCumulSimpleReturn.columns.values:
@@ -701,19 +702,8 @@ def Portfolio():
     # Display the interactive plot in Streamlit
     st.plotly_chart(fig)  # Use st.plotly_chart() for Plotly figures only
 
-
-
-    # plt.figure(figsize=(12.2, 4.5))
-    # for c in dailyCumulSimpleReturn.columns.values:
-    #         plt.plot(dailyCumulSimpleReturn.index, dailyCumulSimpleReturn[c], lw=2, label=c)
-    # plt.legend(loc='upper left', fontsize=10)
-    # plt.xlabel('Date')
-    # plt.ylabel('Growth fo $1 Investment')
-    # plt.title('Daily Cumulative Returns')
-    # st.pyplot()
-
-# # #Differente models to predict the price.
-# def Prediction_model():
+# #Differente models to predict the price.
+# def Prediction():
 #     page_bg_img = '''
 #     <style>
 #     .stApp {
@@ -722,11 +712,14 @@ def Portfolio():
 #     }
 #     </style>
 #     '''
+#     # Assuming page_bg_img is defined somewhere in your code
 #     st.markdown(page_bg_img, unsafe_allow_html=True)
 #     symbols = 'https://raw.githubusercontent.com/Moly-malibu/AIApp/main/bxo_lmmS1.csv'
 #     df = pd.read_csv(symbols)
-#     # #Firs model to predict price and accuracy
-#     now = pd.datetime.now()
+
+#     # Get the current date and time correctly
+#     now = pd.to_datetime('now')
+
 #     tickerSymbol = st.sidebar.selectbox('Company List', (df['Symbol']))
 #     tickerData = yf.Ticker(tickerSymbol)
 #     tickerDf = tickerData.history(period='id', start='2019-01-01', end=now)
@@ -735,55 +728,129 @@ def Portfolio():
 #     company = yf.Ticker(tickerSymbol)
 #     st.write('Web:', company.info["website"])
 #     company_hist = st.sidebar.checkbox('Long Short Term Memory')
+
+#     import math
+#     from sklearn.preprocessing import MinMaxScaler
+#     from keras.models import Sequential
+#     from keras.layers import Dense, LSTM
+    
 #     if company_hist:
 #         st.markdown("<h1 style='text-align: center; color: #002966;'>Long Short Term Memory</h1>", unsafe_allow_html=True)
-#         #Scaler data
-#         train_len = math.ceil(len(dataset)*.8)
-#         scaler = MinMaxScaler(feature_range=(0,1))
+        
+#         # Scaler data
+#         train_len = math.ceil(len(dataset) * .8)
+#         scaler = MinMaxScaler(feature_range=(0, 1))
 #         scaled_data = scaler.fit_transform(dataset)
+        
 #         train_data = scaled_data[0:train_len, :]
-#         #train data
+        
+#         # Train data preparation
 #         x_train = []
 #         y_train = []
+        
 #         for i in range(60, len(train_data)):
-#             x_train.append(train_data[i-60:i,0])
-#             y_train.append(train_data[i,0])
-#             if i<=60:
+#             x_train.append(train_data[i-60:i, 0])
+#             y_train.append(train_data[i, 0])
+#             if i <= 60:
 #                 print(x_train)
 #                 print(y_train)
+        
 #         x_train, y_train = np.array(x_train), np.array(y_train)
-#         x_train = np.reshape(x_train, (x_train.shape[0], x_train.shape[1],1))        #Model
+#         x_train = np.reshape(x_train, (x_train.shape[0], x_train.shape[1], 1))  # Reshape for LSTM model
+        
+#         # Model definition
 #         model = Sequential()
-#         # model.add(LSTM(50, return_sequences=True, input_shape=(x_train.shape[1],1)))
-#         # model.add(LSTM(50, return_sequences=False))
+#         model.add(LSTM(50, return_sequences=True, input_shape=(x_train.shape[1], 1)))
+#         model.add(LSTM(50, return_sequences=False))
 #         model.add(Dense(25))
 #         model.add(Dense(1))
+        
 #         model.compile(optimizer='adam', loss='mean_squared_error')
 #         model.fit(x_train, y_train, batch_size=1, epochs=1)
-#         #Test data
-#         test_data = scaled_data[train_len - 60: , :]
+
+#         # Test data preparation
+#         test_data = scaled_data[train_len - 60:, :]
 #         x_test = []
 #         y_test = dataset[train_len:, :]
+        
 #         for i in range(60, len(test_data)):
-#             x_test.append(test_data[i-60:i,0])
+#             x_test.append(test_data[i-60:i, 0])
+        
 #         x_test = np.array(x_test)
-#         x_test = np.reshape(x_test, (x_test.shape[0], x_test.shape[1],1))
+#         x_test = np.reshape(x_test, (x_test.shape[0], x_test.shape[1], 1))
+        
 #         predictions = model.predict(x_test)
 #         predictions = scaler.inverse_transform(predictions)
-#         #Graphic
+
+#         # Graphic preparation
 #         train = data[:train_len]
 #         valid = data[train_len:]
 #         valid['Predictions'] = predictions
 
-#         plt.figure(figsize=(16,8))
-#         plt.title('Model')
-#         plt.xlabel('Date', fontsize=18)
-#         plt.ylabel('Close Price USD($)', fontsize=18)
-#         plt.plot(train['Close'])
-#         plt.plot(valid[['Close', 'Predictions']])
-#         plt.legend(['train', 'Val', 'Predictions'], loc='upper left')
-#         st.set_option('deprecation.showPyplotGlobalUse', False)
-#         st.pyplot()
+
+
+    # st.markdown(page_bg_img, unsafe_allow_html=True)
+    # symbols = 'https://raw.githubusercontent.com/Moly-malibu/AIApp/main/bxo_lmmS1.csv'
+    # df = pd.read_csv(symbols)
+    # # #Firs model to predict price and accuracy
+    # now = pd.datetime('now')
+    # tickerSymbol = st.sidebar.selectbox('Company List', (df['Symbol']))
+    # tickerData = yf.Ticker(tickerSymbol)
+    # tickerDf = tickerData.history(period='id', start='2019-01-01', end=now)
+    # data = tickerDf.filter(['Close'])
+    # dataset = data.values
+    # company = yf.Ticker(tickerSymbol)
+    # st.write('Web:', company.info["website"])
+    # company_hist = st.sidebar.checkbox('Long Short Term Memory')
+    # if company_hist:
+    #     st.markdown("<h1 style='text-align: center; color: #002966;'>Long Short Term Memory</h1>", unsafe_allow_html=True)
+    #     #Scaler data
+    #     train_len = math.ceil(len(dataset)*.8)
+    #     scaler = MinMaxScaler(feature_range=(0,1))
+    #     scaled_data = scaler.fit_transform(dataset)
+    #     train_data = scaled_data[0:train_len, :]
+    #     #train data
+    #     x_train = []
+    #     y_train = []
+    #     for i in range(60, len(train_data)):
+    #         x_train.append(train_data[i-60:i,0])
+    #         y_train.append(train_data[i,0])
+    #         if i<=60:
+    #             print(x_train)
+    #             print(y_train)
+    #     x_train, y_train = np.array(x_train), np.array(y_train)
+    #     x_train = np.reshape(x_train, (x_train.shape[0], x_train.shape[1],1))        #Model
+    #     model = Sequential()
+    #     # model.add(LSTM(50, return_sequences=True, input_shape=(x_train.shape[1],1)))
+    #     # model.add(LSTM(50, return_sequences=False))
+    #     model.add(Dense(25))
+    #     model.add(Dense(1))
+    #     model.compile(optimizer='adam', loss='mean_squared_error')
+    #     model.fit(x_train, y_train, batch_size=1, epochs=1)
+    #     #Test data
+    #     test_data = scaled_data[train_len - 60: , :]
+    #     x_test = []
+    #     y_test = dataset[train_len:, :]
+    #     for i in range(60, len(test_data)):
+    #         x_test.append(test_data[i-60:i,0])
+    #     x_test = np.array(x_test)
+    #     x_test = np.reshape(x_test, (x_test.shape[0], x_test.shape[1],1))
+    #     predictions = model.predict(x_test)
+    #     predictions = scaler.inverse_transform(predictions)
+    #     #Graphic
+    #     train = data[:train_len]
+    #     valid = data[train_len:]
+    #     valid['Predictions'] = predictions
+
+        # plt.figure(figsize=(16,8))
+        # plt.title('Model')
+        # plt.xlabel('Date', fontsize=18)
+        # plt.ylabel('Close Price USD($)', fontsize=18)
+        # plt.plot(train['Close'])
+        # plt.plot(valid[['Close', 'Predictions']])
+        # plt.legend(['train', 'Val', 'Predictions'], loc='upper left')
+        # st.set_option('deprecation.showPyplotGlobalUse', False)
+        # st.pyplot()
 
 
 #         st.markdown("<h1 style='text-align: center; color: #002966;'>Forecasting the Price Stocks</h1>", unsafe_allow_html=True)
@@ -865,44 +932,46 @@ def Portfolio():
 #     new_predict = tickerDf['Close']
 #     st.write(tickerDf)
 
-# # def ProfitIndustry():
-# #     page_bg_img = '''
-# #     <style>
-# #     .stApp {
-# #     background-image: url("https://img.freepik.com/free-photo/3d-geometric-abstract-cuboid-wallpaper-background_1048-9891.jpg?size=626&ext=jpg&ga=GA1.2.635976572.1603931911");
-# #     background-size: cover;
-# #     }
-# #     </style>
-# #     '''
-# #     st.markdown(page_bg_img, unsafe_allow_html=True)
-# #     st.markdown("<h1 style='text-align: center; color: #002966;'>Profit of Stock Market by Industry</h1>", unsafe_allow_html=True)
-# #     symbols = 'https://raw.githubusercontent.com/Moly-malibu/AIApp/main/industAVG.csv'
-# #     df = pd.read_csv(symbols)
-# #     tickerSymbol = st.sidebar.selectbox('Company List', (df))
-# #     company = yf.Ticker(tickerSymbol)
-# #     analysis = company.history(period='max', interval='1wk')
-# #     profile = ProfileReport(analysis, explorative=True)
-# #     st_profile_report(profile)
+# def ProfitIndustry():
+#     page_bg_img = '''
+#     <style>
+#     .stApp {
+#     background-image: url("https://img.freepik.com/free-photo/3d-geometric-abstract-cuboid-wallpaper-background_1048-9891.jpg?size=626&ext=jpg&ga=GA1.2.635976572.1603931911");
+#     background-size: cover;
+#     }
+#     </style>
+#     '''
+#     st.markdown(page_bg_img, unsafe_allow_html=True)
+#     st.markdown("<h1 style='text-align: center; color: #002966;'>Profit of Stock Market by Industry</h1>", unsafe_allow_html=True)
+#     symbols = 'https://raw.githubusercontent.com/Moly-malibu/AIApp/main/industAVG.csv'
+#     df = pd.read_csv(symbols)
+#     tickerSymbol = st.sidebar.selectbox('Company List', (df))
+#     company = yf.Ticker(tickerSymbol)
+#     analysis = company.history(period='max', interval='1wk')
+#     profile = ProfileReport(analysis, explorative=True)
+#     st_profile_report(profile)
 
-# # def Profit():
-# #     page_bg_img = '''
-# #     <style>
-# #     .stApp {
-# #     background-image: url("https://img.freepik.com/free-photo/3d-geometric-abstract-cuboid-wallpaper-background_1048-9891.jpg?size=626&ext=jpg&ga=GA1.2.635976572.1603931911");
-# #     background-size: cover;
-# #     }
-# #     </style>
-# #     '''
-# #     st.markdown(page_bg_img, unsafe_allow_html=True)
-# #     st.markdown("<h1 style='text-align: center; color: #002966;'>Profit</h1>", unsafe_allow_html=True)
-# #     symbols = 'https://raw.githubusercontent.com/Moly-malibu/AIApp/main/bxo_lmmS1.csv'
-# #     df = pd.read_csv(symbols)
-# #     tickerSymbol = st.sidebar.selectbox('Company List', (df))
-# #     company = yf.Ticker(tickerSymbol)
-# #     st.write('Web:', company.info["website"])
-# #     analysis = company.history(period='max', interval='1wk')
-# #     profile = ProfileReport(analysis, explorative=True)
-# #     st_profile_report(profile)    
+# def Profit():
+#     page_bg_img = '''
+#     <style>
+#     .stApp {
+#     background-image: url("https://img.freepik.com/free-photo/3d-geometric-abstract-cuboid-wallpaper-background_1048-9891.jpg?size=626&ext=jpg&ga=GA1.2.635976572.1603931911");
+#     background-size: cover;
+#     }
+#     </style>
+#     '''
+#     st.markdown(page_bg_img, unsafe_allow_html=True)
+#     st.markdown("<h1 style='text-align: center; color: #002966;'>Profit</h1>", unsafe_allow_html=True)
+#     symbols = 'https://raw.githubusercontent.com/Moly-malibu/AIApp/main/bxo_lmmS1.csv'
+
+#     # Load symbols from CSV
+#     df = pd.read_csv(symbols)
+#     tickerSymbol = st.sidebar.selectbox('Company List', (df))
+#     company = yf.Ticker(tickerSymbol)
+#     st.write('Web:', company.info["website"])
+#     analysis = company.history(period='max', interval='1wk')
+#     profile = ProfileReport(analysis, explorative=True)
+#     st_profile_report(profile)    
 
 # def Statement():
 #     page_bg_img = '''
@@ -939,30 +1008,30 @@ def Portfolio():
 #         # balance_income=si.get_balance_sheet(ticker)
 #         # transpose_balance=balance_income.transpose()
 #         st.write("""**Dividends**""", company.dividends) 
-#         # income=si.get_income_statement(ticker)
-#         # transpose=income.transpose()
-#         # interest_coverage1 = transpose['operatingIncome'] 
-#         # interest_coverage2 = transpose['interestExpense']
-#         # st.write('***Interest Coverage:*** Operating Income / interest Expenses', interest_coverage1/interest_coverage2)
-#         # gross_profit_margin1 = transpose['totalRevenue'] 
-#         # gross_profit_margin2 = transpose['costOfRevenue']
-#         # st.write('***Gross Profit Margin:*** Total Revenue / Gross Profit Margin',(gross_profit_margin1-gross_profit_margin2)/gross_profit_margin1)
-#         # # balance=si.get_balance_sheet(ticker)
-#         # # transpose=balance.transpose()
-#         # current_ratio1 = transpose['totalCurrentAssets'] 
-#         # current_ratio2 = transpose['totalCurrentLiabilities']
-#         # debt_to_assets1 = transpose['otherCurrentAssets'] 
-#         # debt_to_assets2 = transpose['totalAssets']
-#         # st.write('***Debit Assets:*** Total Debit / Total Assets', (debt_to_assets1/debt_to_assets2))
-#         # debt_to_equity1 = transpose['otherCurrentAssets'] 
-#         # debt_to_equity2 = transpose['totalStockholderEquity']
-#         # st.write('***Debit to Equity:*** Total Debit / Total Stock Holders Equity', (debt_to_equity1/debt_to_equity2))
-#         # ROE1 = transpose_income['netIncome'] 
-#         # ROE2 = transpose_balance['totalStockholderEquity']
-#         # st.write('***Return On Equity ROE:*** Net Income / (Total Stock Holder Equity + Total Stock Holder Equity)/2',(ROE1/((ROE2+ROE2)/2)))
-#         # ROA1 = transpose_income['netIncome'] 
-#         # ROA2 = transpose_balance['totalAssets']
-#         # st.write('***Return On Assets:*** Net Income / Total Assets',(ROA1/ROA2))
+        # income=si.get_income_statement(ticker)
+        # transpose=income.transpose()
+        # interest_coverage1 = transpose['operatingIncome'] 
+        # interest_coverage2 = transpose['interestExpense']
+        # st.write('***Interest Coverage:*** Operating Income / interest Expenses', interest_coverage1/interest_coverage2)
+        # gross_profit_margin1 = transpose['totalRevenue'] 
+        # gross_profit_margin2 = transpose['costOfRevenue']
+        # st.write('***Gross Profit Margin:*** Total Revenue / Gross Profit Margin',(gross_profit_margin1-gross_profit_margin2)/gross_profit_margin1)
+        # # balance=si.get_balance_sheet(ticker)
+        # # transpose=balance.transpose()
+        # current_ratio1 = transpose['totalCurrentAssets'] 
+        # current_ratio2 = transpose['totalCurrentLiabilities']
+        # debt_to_assets1 = transpose['otherCurrentAssets'] 
+        # debt_to_assets2 = transpose['totalAssets']
+        # st.write('***Debit Assets:*** Total Debit / Total Assets', (debt_to_assets1/debt_to_assets2))
+        # debt_to_equity1 = transpose['otherCurrentAssets'] 
+        # debt_to_equity2 = transpose['totalStockholderEquity']
+        # st.write('***Debit to Equity:*** Total Debit / Total Stock Holders Equity', (debt_to_equity1/debt_to_equity2))
+        # ROE1 = transpose_income['netIncome'] 
+        # ROE2 = transpose_balance['totalStockholderEquity']
+        # st.write('***Return On Equity ROE:*** Net Income / (Total Stock Holder Equity + Total Stock Holder Equity)/2',(ROE1/((ROE2+ROE2)/2)))
+        # ROA1 = transpose_income['netIncome'] 
+        # ROA2 = transpose_balance['totalAssets']
+        # st.write('***Return On Assets:*** Net Income / Total Assets',(ROA1/ROA2))
 
 #     company_simulation = st.sidebar.checkbox("Monte Carlo Simulation")
 #     if company_simulation:
