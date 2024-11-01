@@ -23,6 +23,8 @@ from bs4 import BeautifulSoup
 
 #import yfinance 
 import yfinance as yf 
+from yahoo_fin.stock_info import get_analysts_info
+from yahoo_fin.stock_info import *
 from yahoofinancials import YahooFinancials
 from yahoo_fin import stock_info as si
 from yahoo_fin import options as ops
@@ -1050,6 +1052,8 @@ def Statement():
         except KeyError:
             st.write('***Dividend Rate:*** Information not available')
 
+        st.write("""**Dividend Yield**""", company.info["dividendYield"])
+
         # Exception
         try:
             profitMargins = company.info["profitMargins"]
@@ -1080,29 +1084,47 @@ def Statement():
         except KeyError:
             st.write('***Market Capital:*** Information not available')
 
+        #other financial info
         
-        # yahoo_financials = YahooFinancials(ticker)
-        # marketcap = yahoo_financials.get_market_cap()
-        # price_to_sales = yahoo_financials.get_current_price()
-        # dividend_yield = yahoo_financials.get_dividend_yield()
-        # income_balance=si.get_income_statement(ticker) # type: ignore
-        # transpose_income=income_balance.transpose()
-        # balance_income=si.get_balance_sheet(ticker) # type: ignore
-        # transpose_balance=balance_income.transpose()
-        # st.write(transpose_balance)
+        st.write("""**Dividends and Split**""", company.actions)
+        st.write("""**Analyst price Targets**""", company.analyst_price_targets)
+        st.write("""**Balance**""", company.balance_sheet)
+        st.write("""**Financials**""",company.financials)
+        st.write("""**Earnings History**""",company.earnings_history)
         
-        st.write("""**Dividends**""", company.dividends) 
+        # msft = yf.Ticker("MSFT")
+
+        # get all stock info
+       
+
+        # get historical market data
+        st.write("""**History**""", company.history(period="1mo"))
+        st.write(company.get_cashflow(freq='yearly'))  # For annual data
         
 
-    #     income=si.get_income_statement(ticker) # type: ignore
-    #     transpose=income.transpose()
-    #     interest_coverage1 = transpose['operatingIncome'] 
-    #     interest_coverage2 = transpose['interestExpense']
-    #     st.write('***Interest Coverage:*** Operating Income / interest Expenses', interest_coverage1/interest_coverage2)
 
-    #     gross_profit_margin1 = transpose['totalRevenue'] 
-    #     gross_profit_margin2 = transpose['costOfRevenue']
-    #     st.write('***Gross Profit Margin:*** Total Revenue / Gross Profit Margin',(gross_profit_margin1-gross_profit_margin2)/gross_profit_margin1)
+
+
+        yahoo_financials = YahooFinancials(ticker)
+        price_to_sales = yahoo_financials.get_current_price()
+
+        income_balance=si.get_income_statement(ticker) # type: ignore
+        transpose_income=income_balance.transpose()
+
+        balance_income=si.get_balance_sheet(ticker) # type: ignore
+        transpose_balance=balance_income.transpose()
+
+        income=si.get_income_statement(ticker) # type: ignore
+        transpose=income.transpose()
+
+        interest_coverage1 = transpose['operatingIncome'] 
+        interest_coverage2 = transpose['interestExpense']
+
+        st.write('***Interest Coverage:*** Operating Income / interest Expenses', interest_coverage1/interest_coverage2)
+
+        gross_profit_margin1 = transpose['totalRevenue'] 
+        gross_profit_margin2 = transpose['costOfRevenue']
+        st.write('***Gross Profit Margin:*** Total Revenue / Gross Profit Margin',(gross_profit_margin1-gross_profit_margin2)/gross_profit_margin1)
 
     #     balance=si.get_balance_sheet(ticker)
     #     transpose=balance.transpose()
