@@ -992,13 +992,12 @@ def Statement():
     </style>
     '''
     st.markdown(page_bg_img, unsafe_allow_html=True)
-    st.markdown("<h1 style='text-align: center; color: #002966;'>Statement</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align: center; color: #002966;'>Overview</h1>", unsafe_allow_html=True)
 
     symbols = 'https://raw.githubusercontent.com/Moly-malibu/AIApp/main/bxo_lmmS1.csv'
     df = pd.read_csv(symbols)
 
     ticker = st.sidebar.selectbox('Stocks by Company', (df))
-
     tickerData = YahooFinancials(ticker)
     company = yf.Ticker(ticker)
 
@@ -1006,11 +1005,11 @@ def Statement():
     try:
         website = company.info["website"]
         if website is not None:
-                st.write('***website:***', website)
+                st.write('***Web site:***', website)
         else:
-                st.write('***website:*** Information not available')
+                st.write('***Web site:*** Information not available')
     except KeyError:
-            st.write('***website:*** Information not available')
+            st.write('***Web site:*** Information not available')
     #exception:
     try:
         industry = company.info["industry"]
@@ -1020,77 +1019,167 @@ def Statement():
                 st.write('***Industry:*** Information not available')
     except KeyError:
             st.write('***Industry:*** Information not available')
+    
+    company_general = st.sidebar.checkbox("Financial Statements")
+    if company_general:
+        st.markdown("<h1 style='text-align: center; color: #002966;'>Financial Statements</h1>", unsafe_allow_html=True)
+    st.markdown(
+    """
+    ***Overview***
+    
+    Determining which financial statement is "most important" depends on the user's objectives: 
+    
+    ***Investors*** often focus on the cash flow statement to assess liquidity. 
 
-    company_general = st.sidebar.checkbox("Financial Ratio")
+    ***Management*** may prioritize the income statement to evaluate operational performance. 
 
+    ***Creditors*** typically examine the balance sheet to understand risk and repayment capacity.
+
+    In practice, these statements should be viewed together to gain a comprehensive understanding of a company's financial health
+
+    Having direct access to financial statements empowers you to conduct in-depth analyses, enabling informed investment decisions. By scrutinizing these statements, you can gain valuable insights into a company's financial health, profitability, and growth potential. This knowledge empowers you to assess risk, identify opportunities, and make strategic investment choices that align with your financial goals.
+    
+    """
+    )
+
+    st.markdown(
+    """ 
+    ***Income Statement***
+
+    ***Purpose***: The income statement, also known as the profit and loss statement, details a company's revenues, expenses, and profits over a specific period.
+    
+    ***Importance***: It is often regarded as the most crucial statement by many users because it shows how profitable a company is during that time frame. It helps stakeholders understand operational efficiency and profitability metrics such as gross margin and net income
+    """)
+    st.write("""**Income Statement for each company**""", company.income_stmt) 
+
+    st.markdown(
+    """ 
+    ***Cash Flow Statement***
+
+    ***Purpose***: This statement tracks the flow of cash in and out of a business, categorized into operating, investing, and financing activities.
+    
+    ***Importance***: Many financial experts argue that the cash flow statement is the most critical financial statement. It provides insights into a company's liquidity and ability to sustain operations through cash management. It highlights whether a company generates enough cash to meet its obligations, making it vital for investors and creditors   
+    
+    """)
+    st.write("""**Cash Flow Statement for each company**""",company.get_cashflow(freq='yearly'))  # For annual data
+
+    st.markdown(
+    """ 
+    ***Balance Sheet***
+
+    ***Purpose***: The balance sheet presents a snapshot of a company's assets, liabilities, and shareholders' equity at a specific point in time.
+    
+    ***Importance***: While it may not directly reflect operational performance like the income statement or cash flow statement, it is crucial for assessing the overall financial position of a company. It shows how assets are financed (through debt or equity) and provides insights into long-term solvency and capital structure. 
+    
+    """)
+    st.write("""**Balance for each company**""", company.balance_sheet)
+
+    company_general = st.sidebar.checkbox("Elements for Investment Analysis")
+
+    # Exception
     if company_general:
         st.markdown("<h1 style='text-align: center; color: #002966;'>Financial Ratios</h1>", unsafe_allow_html=True)
-        try:
-            payout_ratio = company.info["payoutRatio"]
-            if payout_ratio is not None:
-                st.write('***Payout Ratio:***', payout_ratio)
-            else:
-                st.write('***Payout Ratio:*** Information not available')
-        except KeyError:
-            st.write('***Payout Ratio:*** Information not available')
-        # Exception
-        try:
-            trailingAnnualDividendYield = company.info["trailingAnnualDividendYield"]
-            if trailingAnnualDividendYield is not None:
-                st.write('***Trailing Annual Dividend Yield:***', trailingAnnualDividendYield)
-            else:
-                st.write('***Trailing Annual Dividend Yield:*** Information not available')
-        except KeyError:
-            st.write('***Trailing Annual Dividend Yield:*** Information not available')
-        # Exception
-        try:
-            dividendRate = company.info["dividendRate"]
-            if dividendRate is not None:
-                st.write('***Dividend Rate:***', dividendRate)
-            else:
-                st.write('***Dividend Rate:*** Information not available')
-        except KeyError:
-            st.write('***Dividend Rate:*** Information not available')
+    st.subheader("""Relevant Financial Data:""")
+    st.markdown(
+    """ 
+    ***Price-to-Earnings (P/E) Ratio***: This ratio compares a company's current share price to its earnings per share (EPS). A high P/E may indicate that the stock is overvalued or that investors expect high growth rates in the future.
+    
+    ***Price-to-Book (P/B) Ratio***: This measures a company's market value relative to its book value. A lower P/B ratio may suggest that the stock is undervalued.
+    
+    ***Price-to-Sales (P/S) Ratio***: This ratio compares a company's stock price to its revenues per share, providing insight into how much investors are willing to pay for each dollar of sales.
 
-        st.write("""**Dividend Yield**""", company.info["dividendYield"])
+    """)
+    # Get relevant financial data
+    st.subheader("""Valuation Ratios by Company""")
+    market_cap = company.info['marketCap']  # Market Capitalization
+    eps = company.info['trailingEps']        # Earnings Per Share (EPS)
+    book_value = company.info['bookValue']   # Book Value per Share
+    dividend_yield = company.info['dividendYield']  # Dividend Yield
+    current_price = company.history(period='1d')['Close'].iloc[-1]
 
-        # Exception
-        try:
-            profitMargins = company.info["profitMargins"]
-            if profitMargins is not None:
-                st.write('***Profit Margins:***', profitMargins)
-            else:
-                st.write('***Profit Margins:*** Information not available')
-        except KeyError:
-            st.write('***Profit Margins:*** Information not available')
+    # Price-to-Earnings Ratio (P/E)
+    pe_ratio = current_price / eps if eps else None
 
-        # Exception
-        try:
-            pegRatio = company.info["pegRatio"]
-            if pegRatio is not None:
-                st.write('***Peg Ratio:***', pegRatio)
-            else:
-                st.write('***Peg Ratio:*** Information not available')
-        except KeyError:
-            st.write('***Peg Ratio:*** Information not available')
+    # Price-to-Book Ratio (P/B)
+    pb_ratio = current_price / book_value if book_value else None
 
-        # Exception
-        try:
-            marketCap = company.info["marketCap"]
-            if marketCap is not None:
-                st.write('***Market Capital:***', marketCap)
-            else:
-                st.write('***Market Capital:*** Information not available')
-        except KeyError:
-            st.write('***Market Capital:*** Information not available')
+    # Dividend Yield is already fetched as a percentage
+    dividend_yield_percentage = dividend_yield * 100 if dividend_yield else None
 
-        #other financial info
+    # Displaying the results #f"${market_cap:,.2f}"
+    st.write(f"Current Price: ${current_price: .2f}")
+    st.write(f"Market Cap: ${market_cap: .2f}") 
+    st.write(f"Earnings Per Share (EPS): ${eps: .2f}")
+    st.write(f"Book Value: ${book_value: .2f}")
+    st.write(f"P/E Ratio: {pe_ratio: .2f}" if pe_ratio else "P/E Ratio: Not available")
+    st.write(f"P/B Ratio: {pb_ratio: .2f}" if pb_ratio else "P/B Ratio: Not available")
+    st.write(f"Dividend Yield: {dividend_yield_percentage: .2f}%" if dividend_yield_percentage else "Dividend Yield: Not available")
+
+    # company_general = st.sidebar.checkbox("Financial Statements")
+
+
+    # if company_general:
+    #     st.markdown("<h1 style='text-align: center; color: #002966;'>Financial Ratios</h1>", unsafe_allow_html=True)
+    # #     try:
+    #         payout_ratio = company.info["payoutRatio"]
+    #         if payout_ratio is not None:
+    #             st.write('***Payout Ratio:***', payout_ratio)
+    #         else:
+    #             st.write('***Payout Ratio:*** Information not available')
+    #     except KeyError:
+    #         st.write('***Payout Ratio:*** Information not available')
+    #     # Exception
+    #     try:
+    #         trailingAnnualDividendYield = company.info["trailingAnnualDividendYield"]
+    #         if trailingAnnualDividendYield is not None:
+    #             st.write('***Trailing Annual Dividend Yield:***', trailingAnnualDividendYield)
+    #         else:
+    #             st.write('***Trailing Annual Dividend Yield:*** Information not available')
+    #     except KeyError:
+    #         st.write('***Trailing Annual Dividend Yield:*** Information not available')
+    #     # Exception
+    #     try:
+    #         dividendRate = company.info["dividendRate"]
+    #         if dividendRate is not None:
+    #             st.write('***Dividend Rate:***', dividendRate)
+    #         else:
+    #             st.write('***Dividend Rate:*** Information not available')
+    #     except KeyError:
+    #         st.write('***Dividend Rate:*** Information not available')
+
+    #     st.write("""**Dividend Yield**""", company.info["dividendYield"])
+
+    #     # Exception
+    #     try:
+    #         profitMargins = company.info["profitMargins"]
+    #         if profitMargins is not None:
+    #             st.write('***Profit Margins:***', profitMargins)
+    #         else:
+    #             st.write('***Profit Margins:*** Information not available')
+    #     except KeyError:
+    #         st.write('***Profit Margins:*** Information not available')
+
+    #     # Exception
+    #     try:
+    #         pegRatio = company.info["pegRatio"]
+    #         if pegRatio is not None:
+    #             st.write('***Peg Ratio:***', pegRatio)
+    #         else:
+    #             st.write('***Peg Ratio:*** Information not available')
+    #     except KeyError:
+    #         st.write('***Peg Ratio:*** Information not available')
+
+
+
+    #     #other financial info
         
-        st.write("""**Dividends and Split**""", company.actions)
-        st.write("""**Analyst price Targets**""", company.analyst_price_targets)
-        st.write("""**Balance**""", company.balance_sheet)
-        st.write("""**Financials**""",company.financials)
-        st.write("""**Earnings History**""",company.earnings_history)
+    #     st.write("""**Dividends and Split**""", company.actions)
+
+    #     st.write("""**Analyst price Targets**""", company.analyst_price_targets)
+        
+    #     st.write("""**Financials**""",company.financials)
+
+    #     st.write("""**Earnings History**""",company.earnings_history)
         
         # msft = yf.Ticker("MSFT")
 
@@ -1098,33 +1187,40 @@ def Statement():
        
 
         # get historical market data
-        st.write("""**History**""", company.history(period="1mo"))
-        st.write(company.get_cashflow(freq='yearly'))  # For annual data
+
         
 
+        # st.write("""**History**""", company.history(period="1mo"))
+
+       
+
+
+        
+       
 
 
 
-        yahoo_financials = YahooFinancials(ticker)
-        price_to_sales = yahoo_financials.get_current_price()
 
-        income_balance=si.get_income_statement(ticker) # type: ignore
-        transpose_income=income_balance.transpose()
+        # yahoo_financials = YahooFinancials(ticker)
+        # price_to_sales = yahoo_financials.get_current_price()
 
-        balance_income=si.get_balance_sheet(ticker) # type: ignore
-        transpose_balance=balance_income.transpose()
+        # income_balance=si.get_income_statement(ticker) # type: ignore
+        # transpose_income=income_balance.transpose()
 
-        income=si.get_income_statement(ticker) # type: ignore
-        transpose=income.transpose()
+        # balance_income=si.get_balance_sheet(ticker) # type: ignore
+        # transpose_balance=balance_income.transpose()
 
-        interest_coverage1 = transpose['operatingIncome'] 
-        interest_coverage2 = transpose['interestExpense']
+        # income=si.get_income_statement(ticker) # type: ignore
+        # transpose=income.transpose()
 
-        st.write('***Interest Coverage:*** Operating Income / interest Expenses', interest_coverage1/interest_coverage2)
+        # interest_coverage1 = transpose['operatingIncome'] 
+        # interest_coverage2 = transpose['interestExpense']
 
-        gross_profit_margin1 = transpose['totalRevenue'] 
-        gross_profit_margin2 = transpose['costOfRevenue']
-        st.write('***Gross Profit Margin:*** Total Revenue / Gross Profit Margin',(gross_profit_margin1-gross_profit_margin2)/gross_profit_margin1)
+        # st.write('***Interest Coverage:*** Operating Income / interest Expenses', interest_coverage1/interest_coverage2)
+
+        # gross_profit_margin1 = transpose['totalRevenue'] 
+        # gross_profit_margin2 = transpose['costOfRevenue']
+        # st.write('***Gross Profit Margin:*** Total Revenue / Gross Profit Margin',(gross_profit_margin1-gross_profit_margin2)/gross_profit_margin1)
 
     #     balance=si.get_balance_sheet(ticker)
     #     transpose=balance.transpose()
