@@ -39,6 +39,7 @@ from sklearn.svm import SVR
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 
 from bs4 import BeautifulSoup
+import scipy as sp
 
 import keras
 import tensorflow as tf
@@ -49,11 +50,8 @@ from tensorflow.python.keras.layers import Dense, Flatten, Conv2D
 from tensorflow.python.keras import Model
 from tensorflow.python.keras.models import Sequential
 from tensorflow.python.keras import layers
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, LSTM
-
-import scipy.stats as sp
-
+# from tensorflow.keras.models import Sequential
+# from tensorflow.keras.layers import Dense, LSTM
 
 #visualization
 import matplotlib as mpl
@@ -71,12 +69,12 @@ def main():
     # Register pages
     pages = {
         "Home": Home,
-        "Stock": Stock,
-        "Index": Index,
-        # 'Statement': Statement,
-        'Portfolio': Portfolio,
-        "Prediction": Prediction,
-        "IndustryAVG": IndustryAVG,
+        # "Stock": Stock,
+        # "Index": Index,
+        'Statement': Statement,
+        # 'Portfolio': Portfolio,
+        # "Prediction": Prediction,
+        # "IndustryAVG": IndustryAVG,
     }
     st.sidebar.title("Companies Analysis")
     page = st.sidebar.selectbox("Select Menu", tuple(pages.keys()))
@@ -215,569 +213,498 @@ title_temp = """
 components.html(title_temp,height=100)
     
 # Analysis stocks companies by close and volume
-def IndustryAVG(): 
-    page_bg_img = '''
-    <style>
-    .stApp {
-    background-image: url("https://images.pexels.com/photos/743986/pexels-photo-743986.jpeg?cs=srgb&dl=pexels-jess-bailey-designs-743986.jpg&fm=jpg&_gl=1*ckiwkv*_ga*MTI1MDQwMzMyOS4xNjU5ODc1MzA2*_ga_8JE65Q40S6*MTY2NjQxMzM3OS4xMC4xLjE2NjY0MTM3OTMuMC4wLjA.");
-    background-size: cover;
-    }
-    </style>
-    '''
-    st.markdown(page_bg_img, unsafe_allow_html=True)
-    symbols = 'https://raw.githubusercontent.com/Moly-malibu/AIApp/main/industAVG.csv'
-    df = pd.read_csv(symbols)
-    st.markdown("<h1 style='text-align: center; color: #002967;'>Stock Market</h1>", unsafe_allow_html=True)
-    st.markdown("<h1 style='text-align: center; color: #002967;'>Behavior by Industry</h1>", unsafe_allow_html=True)
-    start = st.sidebar.date_input("Enter Date Begin Analysis: ") 
-    tickerSymbol = st.sidebar.selectbox('Stocks Close and Volume price by Industry', (df))
-    tickerData = yf.Ticker(tickerSymbol)
-    tickerDf = tickerData.history(period='id', start=start, end=None)
-    st.markdown('Make Informed Stock Decisions, Simplified')
-    company = tickerSymbol1 = st.sidebar.multiselect("Select Industry Stock be compared", (df))
+# def IndustryAVG(): 
+#     page_bg_img = '''
+#     <style>
+#     .stApp {
+#     background-image: url("https://images.pexels.com/photos/743986/pexels-photo-743986.jpeg?cs=srgb&dl=pexels-jess-bailey-designs-743986.jpg&fm=jpg&_gl=1*ckiwkv*_ga*MTI1MDQwMzMyOS4xNjU5ODc1MzA2*_ga_8JE65Q40S6*MTY2NjQxMzM3OS4xMC4xLjE2NjY0MTM3OTMuMC4wLjA.");
+#     background-size: cover;
+#     }
+#     </style>
+#     '''
+#     st.markdown(page_bg_img, unsafe_allow_html=True)
+#     symbols = 'https://raw.githubusercontent.com/Moly-malibu/AIApp/main/industAVG.csv'
+#     df = pd.read_csv(symbols)
+#     st.markdown("<h1 style='text-align: center; color: #002967;'>Stock Market</h1>", unsafe_allow_html=True)
+#     st.markdown("<h1 style='text-align: center; color: #002967;'>Behavior by Industry</h1>", unsafe_allow_html=True)
+#     start = st.sidebar.date_input("Enter Date Begin Analysis: ") 
+#     tickerSymbol = st.sidebar.selectbox('Stocks Close and Volume price by Industry', (df))
+#     tickerData = yf.Ticker(tickerSymbol)
+#     tickerDf = tickerData.history(period='id', start=start, end=None)
+#     st.markdown('Make Informed Stock Decisions, Simplified')
+#     company = tickerSymbol1 = st.sidebar.multiselect("Select Industry Stock be compared", (df))
 
-    import mpld3
+#     import mpld3
 
-    if company:
-        st.subheader("**Compared Status**")
-        button_clicked = st.sidebar.button("GO")
+#     if company:
+#         st.subheader("**Compared Status**")
+#         button_clicked = st.sidebar.button("GO")
         
-        # Downloading data
-        analysis = yf.download(tickerSymbol1, start=start, end=None)
-        st.write('Analysis', analysis)
+#         # Downloading data
+#         analysis = yf.download(tickerSymbol1, start=start, end=None)
+#         st.write('Analysis', analysis)
         
-        # Check if data is available
-        if not analysis.empty:
-            fig, ax = plt.subplots()
-            analysis['Adj Close'].plot(ax=ax)
-            plt.xlabel("Date")
-            plt.ylabel("Adjusted")
-            plt.title("Stock by Industry")
+#         # Check if data is available
+#         if not analysis.empty:
+#             fig, ax = plt.subplots()
+#             analysis['Adj Close'].plot(ax=ax)
+#             plt.xlabel("Date")
+#             plt.ylabel("Adjusted")
+#             plt.title("Stock by Industry")
             
-            # Convert figure to HTML for interactivity
-            fig_html = mpld3.fig_to_html(fig)
-            st.components.v1.html(fig_html, height=600)
-        else:
-            st.write("No data available for this ticker.")
+#             # Convert figure to HTML for interactivity
+#             fig_html = mpld3.fig_to_html(fig)
+#             st.components.v1.html(fig_html, height=600)
+#         else:
+#             st.write("No data available for this ticker.")
 
-    if company:
-        st.subheader("**Compared Status**")
-        # button_clicked = st.sidebar.button("GO")
+#     if company:
+#         st.subheader("**Compared Status**")
+#         # button_clicked = st.sidebar.button("GO")
         
-        # Downloading data
-        analysis = yf.download(tickerSymbol1, start=start, end=None)
-        st.write('Analysis', analysis)
+#         # Downloading data
+#         analysis = yf.download(tickerSymbol1, start=start, end=None)
+#         st.write('Analysis', analysis)
         
-        # Check if data is available
-        if not analysis.empty:
-            fig = go.Figure()
-            fig.add_trace(go.Scatter(x=analysis.index, y=analysis['Adj Close'], mode='lines', name='Adjusted Close'))
+#         # Check if data is available
+#         if not analysis.empty:
+#             fig = go.Figure()
+#             fig.add_trace(go.Scatter(x=analysis.index, y=analysis['Adj Close'], mode='lines', name='Adjusted Close'))
             
-            fig.update_layout(title='Stock by Industry',
-                            xaxis_title='Date',
-                            yaxis_title='Adjusted',
-                            hovermode='x unified')
+#             fig.update_layout(title='Stock by Industry',
+#                             xaxis_title='Date',
+#                             yaxis_title='Adjusted',
+#                             hovermode='x unified')
             
-            # Display the interactive plot
-            st.plotly_chart(fig)
-        else:
-            st.write("No data available for this ticker.")
+#             # Display the interactive plot
+#             st.plotly_chart(fig)
+#         else:
+#             st.write("No data available for this ticker.")
         
-        st.write(
-        """
-        Stock Market Indices
+#         st.write(
+#         """
+#         Stock Market Indices
 
-        - ***DJI (Dow Jones Industrial Average)***: A price-weighted index that tracks 30 large, publicly-owned companies in the U.S. It serves as a barometer for the overall health of the U.S. economy and is one of the oldest indices, established in 1896.
+#         - ***DJI (Dow Jones Industrial Average)***: A price-weighted index that tracks 30 large, publicly-owned companies in the U.S. It serves as a barometer for the overall health of the U.S. economy and is one of the oldest indices, established in 1896.
         
-        - ***IXIC (NASDAQ Composite)***:  This index includes almost all stocks listed on the NASDAQ stock exchange, heavily weighted towards technology companies. It is a capitalization-weighted index, meaning companies with larger market capitalizations have a greater impact on its value.
+#         - ***IXIC (NASDAQ Composite)***:  This index includes almost all stocks listed on the NASDAQ stock exchange, heavily weighted towards technology companies. It is a capitalization-weighted index, meaning companies with larger market capitalizations have a greater impact on its value.
         
-        - ***GSPC (S&P 500)***: Comprising 500 of the largest U.S. companies, this index is also market-capitalization weighted. It is widely regarded as one of the best representations of the U.S. stock market and economy.
+#         - ***GSPC (S&P 500)***: Comprising 500 of the largest U.S. companies, this index is also market-capitalization weighted. It is widely regarded as one of the best representations of the U.S. stock market and economy.
        
-        - ***TYX (CBOE 10-Year Treasury Yield Index***: This index reflects the yield on 10-year U.S. Treasury bonds, which is often used as a benchmark for other interest rates and as an indicator of investor sentiment regarding future economic conditions.
+#         - ***TYX (CBOE 10-Year Treasury Yield Index***: This index reflects the yield on 10-year U.S. Treasury bonds, which is often used as a benchmark for other interest rates and as an indicator of investor sentiment regarding future economic conditions.
        
-        - ***NYA (NYSE Composite Index)***: This index includes all common stocks listed on the New York Stock Exchange (NYSE). It is a broad measure of the performance of the NYSE and includes both domestic and international companies.
+#         - ***NYA (NYSE Composite Index)***: This index includes all common stocks listed on the New York Stock Exchange (NYSE). It is a broad measure of the performance of the NYSE and includes both domestic and international companies.
         
-        - ***N225 (Nikkei 225)***: A stock market index for the Tokyo Stock Exchange that includes 225 large companies. It is price-weighted, similar to the DJIA, and is one of Japan's most prominent indices.
+#         - ***N225 (Nikkei 225)***: A stock market index for the Tokyo Stock Exchange that includes 225 large companies. It is price-weighted, similar to the DJIA, and is one of Japan's most prominent indices.
         
-        - ***RUT (Russell 2000)***: This index measures the performance of the smallest 2,000 stocks in the Russell 3000 Index, representing small-cap companies in the U.S. market.
-        Commodity Futures
+#         - ***RUT (Russell 2000)***: This index measures the performance of the smallest 2,000 stocks in the Russell 3000 Index, representing small-cap companies in the U.S. market.
+#         Commodity Futures
         
-        - ***CL=F (Crude Oil WTI Futures)***: This represents futures contracts for West Texas Intermediate (WTI) crude oil, a benchmark for oil pricing in North America.
+#         - ***CL=F (Crude Oil WTI Futures)***: This represents futures contracts for West Texas Intermediate (WTI) crude oil, a benchmark for oil pricing in North America.
         
-        - ***GC=F (Gold Futures)***: This symbol represents futures contracts for gold, which are used by investors to hedge against inflation or currency fluctuations.
+#         - ***GC=F (Gold Futures)***: This symbol represents futures contracts for gold, which are used by investors to hedge against inflation or currency fluctuations.
         
-        - ***SI=F (Silver Futures)***:  Similar to gold futures, this represents futures contracts for silver, another precious metal often used as an investment.
-        Currency Pairs
+#         - ***SI=F (Silver Futures)***:  Similar to gold futures, this represents futures contracts for silver, another precious metal often used as an investment.
+#         Currency Pairs
         
-        - ***EURUSD=X***: This symbol represents the exchange rate between the Euro and the U.S. Dollar, one of the most traded currency pairs in the world.
+#         - ***EURUSD=X***: This symbol represents the exchange rate between the Euro and the U.S. Dollar, one of the most traded currency pairs in the world.
         
-        - ***GBPUSD=X***: This represents the exchange rate between the British Pound and the U.S. Dollar, another major currency pair in global markets.
-        Other Indices
+#         - ***GBPUSD=X***: This represents the exchange rate between the British Pound and the U.S. Dollar, another major currency pair in global markets.
+#         Other Indices
         
-        - ***TNX (CBOE 10-Year Treasury Note Yield)***: This index reflects the yield on 10-year Treasury notes, providing insights into investor expectations regarding future interest rates and inflation.
+#         - ***TNX (CBOE 10-Year Treasury Note Yield)***: This index reflects the yield on 10-year Treasury notes, providing insights into investor expectations regarding future interest rates and inflation.
         
-        - ***CMC200 (Crypto Market Cap Index)***:  An index that tracks the market capitalization of cryptocurrencies, providing a snapshot of overall market performance in this sector.
+#         - ***CMC200 (Crypto Market Cap Index)***:  An index that tracks the market capitalization of cryptocurrencies, providing a snapshot of overall market performance in this sector.
         
-        - ***BTC-USD (Bitcoin)***: Represents Bitcoin's price in U.S. Dollars, reflecting its value in the cryptocurrency market.
+#         - ***BTC-USD (Bitcoin)***: Represents Bitcoin's price in U.S. Dollars, reflecting its value in the cryptocurrency market.
         
         
         
-        These indices and commodities provide valuable insights into various sectors of financial markets, including equities, commodities, currencies, and fixed income securities. They are widely used by investors for analysis and decision-making regarding investments and economic trends.
+#         These indices and commodities provide valuable insights into various sectors of financial markets, including equities, commodities, currencies, and fixed income securities. They are widely used by investors for analysis and decision-making regarding investments and economic trends.
 
-        EXAMPlE:
+#         EXAMPlE:
 
-        When comparing the Dow Jones Industrial Average (DJI), the CBOE 10-Year Treasury Yield Index (TYX), and the Nikkei 225 (N225), several insights can be drawn regarding market performance, economic conditions, and investor sentiment. Here’s a breakdown of what this comparison can show:
+#         When comparing the Dow Jones Industrial Average (DJI), the CBOE 10-Year Treasury Yield Index (TYX), and the Nikkei 225 (N225), several insights can be drawn regarding market performance, economic conditions, and investor sentiment. Here’s a breakdown of what this comparison can show:
         
         
-        - ***1. Market Performance***:
+#         - ***1. Market Performance***:
 
-        ***DJI***: Represents the performance of 30 large, established companies in the U.S. A rising DJI indicates strong performance in the industrial sector and overall economic health.
+#         ***DJI***: Represents the performance of 30 large, established companies in the U.S. A rising DJI indicates strong performance in the industrial sector and overall economic health.
         
-        ***TYX***: Reflects the yield on 10-year U.S. Treasury bonds. A higher yield often suggests that investors expect stronger economic growth and potentially higher inflation, leading to increased interest rates.
+#         ***TYX***: Reflects the yield on 10-year U.S. Treasury bonds. A higher yield often suggests that investors expect stronger economic growth and potentially higher inflation, leading to increased interest rates.
         
-        ***N225***: Shows the performance of major Japanese companies. Comparing it with DJI can highlight differences in market sentiment between the U.S. and Japan.
+#         ***N225***: Shows the performance of major Japanese companies. Comparing it with DJI can highlight differences in market sentiment between the U.S. and Japan.
         
-        - ***2. Economic Indicators*** The relationship between DJI and TYX can indicate investor confidence. If the DJI is rising while TYX is also increasing, it may suggest that investors are optimistic about economic growth but are also concerned about inflation leading to higher interest rates.
-        Conversely, if DJI is falling while TYX rises, it may indicate a flight to safety among investors, where they prefer bonds over stocks due to economic uncertainty.
+#         - ***2. Economic Indicators*** The relationship between DJI and TYX can indicate investor confidence. If the DJI is rising while TYX is also increasing, it may suggest that investors are optimistic about economic growth but are also concerned about inflation leading to higher interest rates.
+#         Conversely, if DJI is falling while TYX rises, it may indicate a flight to safety among investors, where they prefer bonds over stocks due to economic uncertainty.
         
-       - ***3. Global Market Trends***
+#        - ***3. Global Market Trends***
 
-        Comparing DJI and N225 can provide insights into how global markets react to similar economic events. ***For example***, if both indices are moving in tandem, it may suggest a global trend affecting investor sentiment.
-        If one index rises while the other falls, it may indicate regional differences in economic conditions or investor confidence.
+#         Comparing DJI and N225 can provide insights into how global markets react to similar economic events. ***For example***, if both indices are moving in tandem, it may suggest a global trend affecting investor sentiment.
+#         If one index rises while the other falls, it may indicate regional differences in economic conditions or investor confidence.
         
-        - ***4. Investment Strategies***
+#         - ***4. Investment Strategies***
 
-        Investors might use this comparison to make decisions about asset allocation. For instance, if DJI is performing well but TYX is rising sharply, it may prompt investors to shift some assets from stocks to bonds to hedge against potential interest rate hikes.
-        Observing N225 alongside DJI could influence decisions for international investments, particularly for those looking at exposure in Asian markets.
+#         Investors might use this comparison to make decisions about asset allocation. For instance, if DJI is performing well but TYX is rising sharply, it may prompt investors to shift some assets from stocks to bonds to hedge against potential interest rate hikes.
+#         Observing N225 alongside DJI could influence decisions for international investments, particularly for those looking at exposure in Asian markets.
         
-        - ***5. Risk Assessment***
-        The volatility of these indices can help assess market risk. A stable DJI with fluctuating TYX could suggest a cautious approach to investing in U.S. equities, while a volatile N225 might signal greater risk in Japanese markets.
-        
-        
-        - ***Conclusion***
+#         - ***5. Risk Assessment***
+#         The volatility of these indices can help assess market risk. A stable DJI with fluctuating TYX could suggest a cautious approach to investing in U.S. equities, while a volatile N225 might signal greater risk in Japanese markets.
         
         
-        By comparing the DJI with TYX and N225, investors can gain a comprehensive view of market dynamics, economic expectations, and global trends. This analysis helps in making informed investment decisions based on varying factors influencing stock and bond markets across different regions.
+#         - ***Conclusion***
+        
+        
+#         By comparing the DJI with TYX and N225, investors can gain a comprehensive view of market dynamics, economic expectations, and global trends. This analysis helps in making informed investment decisions based on varying factors influencing stock and bond markets across different regions.
 
 
-        ---
-        """)
+#         ---
+#         """)
 
-def Index():        
-    page_bg_img = '''
-    <style>
-    .stApp {
-    background-image: url("https://img.freepik.com/free-photo/3d-geometric-abstract-cuboid-wallpaper-background_1048-9891.jpg?size=626&ext=jpg&ga=GA1.2.635976572.1603931911");
-    background-size: cover;
-    }
-    </style>
-    '''
-    st.markdown(page_bg_img, unsafe_allow_html=True)
-    symbols = 'https://raw.githubusercontent.com/Moly-malibu/AIApp/main/bxo_lmmS1.csv'
-    # Load symbols from CSV
-    df = pd.read_csv(symbols)
+# def Index():        
+#     page_bg_img = '''
+#     <style>
+#     .stApp {
+#     background-image: url("https://img.freepik.com/free-photo/3d-geometric-abstract-cuboid-wallpaper-background_1048-9891.jpg?size=626&ext=jpg&ga=GA1.2.635976572.1603931911");
+#     background-size: cover;
+#     }
+#     </style>
+#     '''
+#     st.markdown(page_bg_img, unsafe_allow_html=True)
+#     symbols = 'https://raw.githubusercontent.com/Moly-malibu/AIApp/main/bxo_lmmS1.csv'
+#     # Load symbols from CSV
+#     df = pd.read_csv(symbols)
 
-    st.markdown("<h1 style='text-align: center; color: #002967;'>Stock Price </h1>", unsafe_allow_html=True)
+#     st.markdown("<h1 style='text-align: center; color: #002967;'>Stock Price </h1>", unsafe_allow_html=True)
     
-    # Date input for analysis start date
-    start = st.sidebar.date_input("Enter Date Begin Analysis:")
+#     # Date input for analysis start date
+#     start = st.sidebar.date_input("Enter Date Begin Analysis:")
 
-    # Select box for ticker symbols
-    tickerSymbol = st.sidebar.selectbox('Stocks Close and Volume price by Company', df['Symbol'].tolist())  # Ensure 'Symbol' is a column in df
+#     # Select box for ticker symbols
+#     tickerSymbol = st.sidebar.selectbox('Stocks Close and Volume price by Company', df['Symbol'].tolist())  # Ensure 'Symbol' is a column in df
     
-    # Fetching ticker data
-    tickerData = yf.Ticker(tickerSymbol)
+#     # Fetching ticker data
+#     tickerData = yf.Ticker(tickerSymbol)
 
-    # Fetch historical data starting from 'start'
-    tickerDf = tickerData.history(start=start)
+#     # Fetch historical data starting from 'start'
+#     tickerDf = tickerData.history(start=start)
 
-    # Display analysis header
-    st.write("# Analysis of Data")
+#     # Display analysis header
+#     st.write("# Analysis of Data")
 
-    # Check if DataFrame is not empty
-    if not tickerDf.empty:
-        # Displaying closing prices
-        st.write("## Closing Prices")
-        st.line_chart(tickerDf['Close'])
-    else:
-        st.write("No data available for this ticker symbol.")
+#     # Check if DataFrame is not empty
+#     if not tickerDf.empty:
+#         # Displaying closing prices
+#         st.write("## Closing Prices")
+#         st.line_chart(tickerDf['Close'])
+#     else:
+#         st.write("No data available for this ticker symbol.")
 
-    company = yf.Ticker(tickerSymbol)
-    st.write('Company name and Web:', company.info["website"])
-    # st.line_chart(tickerDf.Close)
-    st.write(""" 
-    ## Volume Price
-    """)
-    st.line_chart(tickerDf.Volume)
-    st.write(tickerDf)
-    st.markdown("<h1 style='text-align: center; color: #002967;'>Stock Price Compared</h1>", unsafe_allow_html=True)
-    st.write("""
-    **Business** and **Techology** are two fills that have changed the world, both occupy the main ratings in finance, being one of the most highly valued in the stock market leading their owners to be billionaires, in this simple application we can analyze the stock movement and prediction of future price of stock used algoriths and Machile Learning.
-    Show are the Stock **Closing Price** and ** Volume** of Stocks by year!
-    """)
-    st.markdown('Help to take algoritmc decision about stocks')
-    company = tickerSymbol1 = st.sidebar.multiselect("Select Companies Stock be compared", (df))
+#     company = yf.Ticker(tickerSymbol)
+#     st.write('Company name and Web:', company.info["website"])
+#     # st.line_chart(tickerDf.Close)
+#     st.write(""" 
+#     ## Volume Price
+#     """)
+#     st.line_chart(tickerDf.Volume)
+#     st.write(tickerDf)
+#     st.markdown("<h1 style='text-align: center; color: #002967;'>Stock Price Compared</h1>", unsafe_allow_html=True)
+#     st.write("""
+#     **Business** and **Techology** are two fills that have changed the world, both occupy the main ratings in finance, being one of the most highly valued in the stock market leading their owners to be billionaires, in this simple application we can analyze the stock movement and prediction of future price of stock used algoriths and Machile Learning.
+#     Show are the Stock **Closing Price** and ** Volume** of Stocks by year!
+#     """)
+#     st.markdown('Help to take algoritmc decision about stocks')
+#     company = tickerSymbol1 = st.sidebar.multiselect("Select Companies Stock be compared", (df))
 
-        # Sidebar for selecting companies
-    company = st.sidebar.multiselect("Select Companies Stock to be compared", (df))
+#         # Sidebar for selecting companies
+#     company = st.sidebar.multiselect("Select Companies Stock to be compared", (df))
 
-    if company:
-        st.subheader("**Compared Status**")
-        button_clicked = st.sidebar.button("GO")
+#     if company:
+#         st.subheader("**Compared Status**")
+#         button_clicked = st.sidebar.button("GO")
         
-        # Downloading data
-        tickerDf = yf.download(company, start=start, end=None)
+#         # Downloading data
+#         tickerDf = yf.download(company, start=start, end=None)
         
-        # Check if data is available
-        if not tickerDf.empty:
-            # Create a Plotly figure
-            fig = go.Figure()
+#         # Check if data is available
+#         if not tickerDf.empty:
+#             # Create a Plotly figure
+#             fig = go.Figure()
             
-            # Add traces for each selected company
-            for ticker in company:
-                fig.add_trace(go.Scatter(x=tickerDf.index, 
-                                        y=tickerDf['Adj Close'][ticker], 
-                                        mode='lines', 
-                                        name=ticker))
+#             # Add traces for each selected company
+#             for ticker in company:
+#                 fig.add_trace(go.Scatter(x=tickerDf.index, 
+#                                         y=tickerDf['Adj Close'][ticker], 
+#                                         mode='lines', 
+#                                         name=ticker))
 
-            # Update layout with titles and labels
-            fig.update_layout(title='Company Stock Comparison',
-                            xaxis_title='Date',
-                            yaxis_title='Adjusted Close Price',
-                            legend_title='Companies',
-                            hovermode='x unified')
+#             # Update layout with titles and labels
+#             fig.update_layout(title='Company Stock Comparison',
+#                             xaxis_title='Date',
+#                             yaxis_title='Adjusted Close Price',
+#                             legend_title='Companies',
+#                             hovermode='x unified')
             
-            # Display the interactive plot
-            st.plotly_chart(fig)
+#             # Display the interactive plot
+#             st.plotly_chart(fig)
 
-            # Volume chart (optional)
-            volume_fig = go.Figure()
-            for ticker in company:
-                volume_fig.add_trace(go.Bar(x=tickerDf.index, 
-                                            y=tickerDf['Volume'][ticker], 
-                                            name=ticker))
+#             # Volume chart (optional)
+#             volume_fig = go.Figure()
+#             for ticker in company:
+#                 volume_fig.add_trace(go.Bar(x=tickerDf.index, 
+#                                             y=tickerDf['Volume'][ticker], 
+#                                             name=ticker))
             
-            volume_fig.update_layout(title='Trading Volume Comparison',
-                                    xaxis_title='Date',
-                                    yaxis_title='Volume',
-                                    barmode='stack')
+#             volume_fig.update_layout(title='Trading Volume Comparison',
+#                                     xaxis_title='Date',
+#                                     yaxis_title='Volume',
+#                                     barmode='stack')
             
-            st.plotly_chart(volume_fig)
+#             st.plotly_chart(volume_fig)
             
-        else:
-            st.write("No data available for the selected stocks.")
+#         else:
+#             st.write("No data available for the selected stocks.")
 
 #Portfolio
-def Portfolio():
-    page_bg_img = '''
-    <style>
-    .stApp {
-    background-image: url("https://images.pexels.com/photos/1024613/pexels-photo-1024613.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=1000");
-    background-size: cover;
-    }
-    </style>
-    '''
-    st.markdown(page_bg_img, unsafe_allow_html=True)
-    symbols = 'https://raw.githubusercontent.com/Moly-malibu/AIApp/main/bxo_lmmS1.csv'
-    df = pd.read_csv(symbols)
-    st.markdown("<h1 style='text-align: center; color: #002967;'>Portfolio</h1>", unsafe_allow_html=True)
-    st.write(""" Make your ***own Portfolio*** with 5 companies and analyze what will be your profit.""")
-    st.write("""***Instructions:***""") 
-    st.write(
-        """
-        - Select 5 companies where you want to invest or Analysis.  ('others' it needs more companies)  
+# def Portfolio():
+#     page_bg_img = '''
+#     <style>
+#     .stApp {
+#     background-image: url("https://images.pexels.com/photos/1024613/pexels-photo-1024613.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=1000");
+#     background-size: cover;
+#     }
+#     </style>
+#     '''
+#     st.markdown(page_bg_img, unsafe_allow_html=True)
+#     symbols = 'https://raw.githubusercontent.com/Moly-malibu/AIApp/main/bxo_lmmS1.csv'
+#     df = pd.read_csv(symbols)
+#     st.markdown("<h1 style='text-align: center; color: #002967;'>Portfolio</h1>", unsafe_allow_html=True)
+#     st.write(""" Make your ***own Portfolio*** with 5 companies and analyze what will be your profit.""")
+#     st.write("""***Instructions:***""") 
+#     st.write(
+#         """
+#         - Select 5 companies where you want to invest or Analysis.  ('others' it needs more companies)  
 
-        - Select Date.
-        ---
-        """)
+#         - Select Date.
+#         ---
+#         """)
     
-    stockStarData = st.sidebar.date_input("Select Date when you started to investing:")
-    company = tickerSymbol1 = st.multiselect("Select Companies to create the Portfolio", (df['Symbol']))
-    button_clicked = st.sidebar.button("GO")
-    if company:
-        def getmyportfolio(stock=tickerSymbol1, start=stockStarData, end=None):
-            numAssets = len(tickerSymbol1)
-            st.write('***you have*** ' +str(numAssets) + ' ***Assets in your Portafolio.***')
-            data = yf.download(tickerSymbol1, start=start, end=end)['Adj Close']
-            return data
-        my_stocks = getmyportfolio(tickerSymbol1)
-        st.write(my_stocks)
-        daily_return = my_stocks.pct_change(1)
-        daily_return.corr()
-        daily_return.cov()
-        daily_return.var()
-        daily_return.std()
-        st.write('***Stock Return***',daily_return)
-        st.write('***Stock Correlation***',daily_return.corr())
+#     stockStarData = st.sidebar.date_input("Select Date when you started to investing:")
+#     company = tickerSymbol1 = st.multiselect("Select Companies to create the Portfolio", (df['Symbol']))
+#     button_clicked = st.sidebar.button("GO")
+#     if company:
+#         def getmyportfolio(stock=tickerSymbol1, start=stockStarData, end=None):
+#             numAssets = len(tickerSymbol1)
+#             st.write('***you have*** ' +str(numAssets) + ' ***Assets in your Portafolio.***')
+#             data = yf.download(tickerSymbol1, start=start, end=end)['Adj Close']
+#             return data
+#         my_stocks = getmyportfolio(tickerSymbol1)
+#         st.write(my_stocks)
+#         daily_return = my_stocks.pct_change(1)
+#         daily_return.corr()
+#         daily_return.cov()
+#         daily_return.var()
+#         daily_return.std()
+#         st.write('***Stock Return***',daily_return)
+#         st.write('***Stock Correlation***',daily_return.corr())
 
-        # Calculate daily returns
-        daily_returns = my_stocks.pct_change()
+#         # Calculate daily returns
+#         daily_returns = my_stocks.pct_change()
 
-        # Calculate correlation matrix
-        correlation_matrix = daily_returns.corr()
+#         # Calculate correlation matrix
+#         correlation_matrix = daily_returns.corr()
 
-        # Display the correlation matrix as a heatmap
-        import seaborn as sns
-        st.subheader("Stock Correlation Heatmap")
+#         # Display the correlation matrix as a heatmap
+#         import seaborn as sns
+#         st.subheader("Stock Correlation Heatmap")
         
-        plt.figure(figsize=(10, 8))
-        sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt=".2f", linewidths=.5)
-        plt.title("Correlation Matrix of Selected Stocks")
+#         plt.figure(figsize=(10, 8))
+#         sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt=".2f", linewidths=.5)
+#         plt.title("Correlation Matrix of Selected Stocks")
         
-        # Show the plot in Streamlit
-        st.pyplot(plt)
-    else:
-        st.write("Please enter valid stock tickers.")
+#         # Show the plot in Streamlit
+#         st.pyplot(plt)
+#     else:
+#         st.write("Please enter valid stock tickers.")
 
 
-        st.write('***Stock Covariance Matrix for Return***',daily_return.cov())
-        st.write('***Stock Variance***',daily_return.var())
-        st.write('***Stock Volatility***', daily_return.std())
+#         st.write('***Stock Covariance Matrix for Return***',daily_return.cov())
+#         st.write('***Stock Variance***',daily_return.var())
+#         st.write('***Stock Volatility***', daily_return.std())
     
-    #Visualization
-        # Load symbols from CSV (ensure 'symbols' is defined)
-    df = pd.read_csv(symbols)
+#     #Visualization
+#         # Load symbols from CSV (ensure 'symbols' is defined)
+#     df = pd.read_csv(symbols)
 
-    st.markdown("<h1 style='text-align: center; color: #002967;'>Stock Price </h1>", unsafe_allow_html=True)
+#     st.markdown("<h1 style='text-align: center; color: #002967;'>Stock Price </h1>", unsafe_allow_html=True)
 
-    # Date input for analysis start date
-    start = st.sidebar.date_input("Enter Date Begin Analysis:")
+#     # Date input for analysis start date
+#     start = st.sidebar.date_input("Enter Date Begin Analysis:")
 
-    # Select box for ticker symbols
-    tickerSymbol = st.sidebar.selectbox('Stocks Close and Volume price by Company', df['Symbol'].tolist())  # Ensure 'Symbol' is a column in df
+#     # Select box for ticker symbols
+#     tickerSymbol = st.sidebar.selectbox('Stocks Close and Volume price by Company', df['Symbol'].tolist())  # Ensure 'Symbol' is a column in df
 
-    # Fetching ticker data
-    tickerData = yf.Ticker(tickerSymbol)
+#     # Fetching ticker data
+#     tickerData = yf.Ticker(tickerSymbol)
 
-    # Fetch historical data starting from 'start'
-    tickerDf = tickerData.history(start=start)
+#     # Fetch historical data starting from 'start'
+#     tickerDf = tickerData.history(start=start)
 
-    # Display analysis header
-    st.write("# Analysis of Data")
+#     # Display analysis header
+#     st.write("# Analysis of Data")
 
-    # Check if DataFrame is not empty
-    if not tickerDf.empty:
-        # Create a candlestick chart using Plotly
-        fig = go.Figure(data=[go.Candlestick(x=tickerDf.index,
-                                            open=tickerDf['Open'],
-                                            high=tickerDf['High'],
-                                            low=tickerDf['Low'],
-                                            close=tickerDf['Close'])])
+#     # Check if DataFrame is not empty
+#     if not tickerDf.empty:
+#         # Create a candlestick chart using Plotly
+#         fig = go.Figure(data=[go.Candlestick(x=tickerDf.index,
+#                                             open=tickerDf['Open'],
+#                                             high=tickerDf['High'],
+#                                             low=tickerDf['Low'],
+#                                             close=tickerDf['Close'])])
 
-        # Update layout of the chart
-        fig.update_layout(title=f'Candlestick Chart for {tickerSymbol}',
-                        xaxis_title='Date',
-                        yaxis_title='Price',
-                        xaxis_rangeslider_visible=False)
+#         # Update layout of the chart
+#         fig.update_layout(title=f'Candlestick Chart for {tickerSymbol}',
+#                         xaxis_title='Date',
+#                         yaxis_title='Price',
+#                         xaxis_rangeslider_visible=False)
 
-        # Display the candlestick chart in Streamlit
-        st.plotly_chart(fig)
-    else:
-        st.write("No data available for this ticker symbol.")
+#         # Display the candlestick chart in Streamlit
+#         st.plotly_chart(fig)
+#     else:
+#         st.write("No data available for this ticker symbol.")
 
-    #get Growth Investment
-        dailyMeanSimpleReturns = daily_return.mean()
-        randomWeights = np.array([0.4, 0.1, 0.3, 0.1, 0.1])
-        portfoliosimpleReturn = np.sum(dailyMeanSimpleReturns*randomWeights)
-        dailyCumulSimpleReturn = (daily_return+1).cumprod()
-    st.write("""***Daily Expected Portfolio Return and Expected Annualized Portfolio Return***""")
-    st.markdown(
-    """ 
-    When you have both the Daily Expected Portfolio Return and the Expected Annualized Portfolio Return, you can draw several conclusions about your investment portfolio. Here’s a breakdown of what these metrics imply and how they can guide your investment decisions:
-    Understanding Daily Expected Portfolio Return.
+#     #get Growth Investment
+#         dailyMeanSimpleReturns = daily_return.mean()
+#         randomWeights = np.array([0.4, 0.1, 0.3, 0.1, 0.1])
+#         portfoliosimpleReturn = np.sum(dailyMeanSimpleReturns*randomWeights)
+#         dailyCumulSimpleReturn = (daily_return+1).cumprod()
+#     st.write("""***Daily Expected Portfolio Return and Expected Annualized Portfolio Return***""")
+#     st.markdown(
+#     """ 
+#     When you have both the Daily Expected Portfolio Return and the Expected Annualized Portfolio Return, you can draw several conclusions about your investment portfolio. Here’s a breakdown of what these metrics imply and how they can guide your investment decisions:
+#     Understanding Daily Expected Portfolio Return.
 
-    - ***Short-Term Performance***: The Daily Expected Portfolio Return gives you an estimate of how much return you can expect from your portfolio on a daily basis. This is useful for short-term trading strategies or for understanding daily fluctuations in your investment's value.
+#     - ***Short-Term Performance***: The Daily Expected Portfolio Return gives you an estimate of how much return you can expect from your portfolio on a daily basis. This is useful for short-term trading strategies or for understanding daily fluctuations in your investment's value.
     
-    - ***Volatility Assessment***: A higher daily expected return may indicate a more volatile portfolio, where returns can fluctuate significantly day-to-day. This can help you gauge the risk level associated with your investments.
-    Understanding Expected Annualized Portfolio Return
+#     - ***Volatility Assessment***: A higher daily expected return may indicate a more volatile portfolio, where returns can fluctuate significantly day-to-day. This can help you gauge the risk level associated with your investments.
+#     Understanding Expected Annualized Portfolio Return
    
-    - ***Long-Term Growth Projection***: The Expected Annualized Portfolio Return translates the daily returns into an annual figure, providing a more comprehensive view of potential growth over a year. This is crucial for long-term investment planning and assessing whether your portfolio aligns with your financial goals.
-    Comparison with Benchmarks: You can compare the expected annualized return against benchmarks (like market indices) to evaluate whether your portfolio is likely to outperform or underperform relative to the market.
+#     - ***Long-Term Growth Projection***: The Expected Annualized Portfolio Return translates the daily returns into an annual figure, providing a more comprehensive view of potential growth over a year. This is crucial for long-term investment planning and assessing whether your portfolio aligns with your financial goals.
+#     Comparison with Benchmarks: You can compare the expected annualized return against benchmarks (like market indices) to evaluate whether your portfolio is likely to outperform or underperform relative to the market.
     
     
-    ***Conclusions:***
+#     ***Conclusions:***
 
-    - ***Risk vs. Reward***: If the daily expected return is significantly higher than the annualized return, it may indicate that while short-term gains could be substantial, the overall annual performance may not reflect that due to volatility or market conditions. This highlights the importance of understanding both short-term and long-term perspectives.
+#     - ***Risk vs. Reward***: If the daily expected return is significantly higher than the annualized return, it may indicate that while short-term gains could be substantial, the overall annual performance may not reflect that due to volatility or market conditions. This highlights the importance of understanding both short-term and long-term perspectives.
     
-    - ***Investment Strategy Alignment***: If your expected annualized return meets or exceeds your investment goals (e.g., retirement savings, purchasing a home), it suggests that your current asset allocation and investment strategy are aligned with your financial objectives.
+#     - ***Investment Strategy Alignment***: If your expected annualized return meets or exceeds your investment goals (e.g., retirement savings, purchasing a home), it suggests that your current asset allocation and investment strategy are aligned with your financial objectives.
     
-    - ***Portfolio Adjustments***: If the expected returns are lower than desired, consider rebalancing your portfolio by adjusting asset allocations, diversifying into higher-return assets, or exploring different investment strategies to enhance overall returns.
+#     - ***Portfolio Adjustments***: If the expected returns are lower than desired, consider rebalancing your portfolio by adjusting asset allocations, diversifying into higher-return assets, or exploring different investment strategies to enhance overall returns.
     
-    - ***Performance Monitoring***: Regularly monitor both daily and annualized returns to assess whether your investments are performing as expected. This can help in making timely adjustments to mitigate losses or capitalize on gains.
+#     - ***Performance Monitoring***: Regularly monitor both daily and annualized returns to assess whether your investments are performing as expected. This can help in making timely adjustments to mitigate losses or capitalize on gains.
     
-    - ***Expectations Management***: Both metrics serve as reminders that investment returns are not guaranteed and are subject to market risks. They help set realistic expectations for future performance based on historical data and market conditions.
+#     - ***Expectations Management***: Both metrics serve as reminders that investment returns are not guaranteed and are subject to market risks. They help set realistic expectations for future performance based on historical data and market conditions.
     
-    - ***Example Calculation To illustrate***, if you have a Daily Expected Portfolio Return of 0.05% (or 5% annually) and an Expected Annualized Portfolio Return of 8%, this suggests:
-    Your investments are projected to grow at a reasonable rate annually. The daily return indicates potential for short-term gains, but you should consider whether this aligns with your risk tolerance and investment horizon.
+#     - ***Example Calculation To illustrate***, if you have a Daily Expected Portfolio Return of 0.05% (or 5% annually) and an Expected Annualized Portfolio Return of 8%, this suggests:
+#     Your investments are projected to grow at a reasonable rate annually. The daily return indicates potential for short-term gains, but you should consider whether this aligns with your risk tolerance and investment horizon.
     
     
-    - ***Conclusion***:
+#     - ***Conclusion***:
 
-    By analyzing both daily expected returns and annualized returns, you gain a comprehensive view of your portfolio's performance potential. This dual perspective aids in making informed decisions about risk management, portfolio adjustments, and aligning investments with long-term financial goals.
+#     By analyzing both daily expected returns and annualized returns, you gain a comprehensive view of your portfolio's performance potential. This dual perspective aids in making informed decisions about risk management, portfolio adjustments, and aligning investments with long-term financial goals.
 
 
-    """)
+#     """)
 
-    #Visualization
-    # Calculate daily mean simple returns
-    dailyMeanSimpleReturns = daily_return.mean()
-    st.write('***Daily Mean Simple Return:*** ', dailyMeanSimpleReturns)
+#     #Visualization
+#     # Calculate daily mean simple returns
+#     dailyMeanSimpleReturns = daily_return.mean()
+#     st.write('***Daily Mean Simple Return:*** ', dailyMeanSimpleReturns)
 
-    # Define random weights for the portfolio
-    randomWeights = np.array([0.4, 0.1, 0.3, 0.1, 0.1])
-    portfoliosimpleReturn = np.sum(dailyMeanSimpleReturns * randomWeights)
-    st.write('***Daily Expected Portfolio Return:*** ', portfoliosimpleReturn)
+#     # Define random weights for the portfolio
+#     randomWeights = np.array([0.4, 0.1, 0.3, 0.1, 0.1])
+#     portfoliosimpleReturn = np.sum(dailyMeanSimpleReturns * randomWeights)
+#     st.write('***Daily Expected Portfolio Return:*** ', portfoliosimpleReturn)
 
-    # Calculate expected annualized portfolio return
-    expectedAnnualizedReturn = portfoliosimpleReturn * 253  # Assuming 253 trading days in a year
-    st.write('***Expected Annualized Portfolio Return:*** ', expectedAnnualizedReturn)
+#     # Calculate expected annualized portfolio return
+#     expectedAnnualizedReturn = portfoliosimpleReturn * 253  # Assuming 253 trading days in a year
+#     st.write('***Expected Annualized Portfolio Return:*** ', expectedAnnualizedReturn)
 
-    # Calculate cumulative simple returns
-    dailyCumulSimpleReturn = (daily_return + 1).cumprod()
-    st.write('***Growth of Investment:*** ', dailyCumulSimpleReturn)
+#     # Calculate cumulative simple returns
+#     dailyCumulSimpleReturn = (daily_return + 1).cumprod()
+#     st.write('***Growth of Investment:*** ', dailyCumulSimpleReturn)
 
-    # Visualization with Matplotlib
-    # st.subheader("Matplotlib Visualization")
+#     # Visualization with Matplotlib
+#     # st.subheader("Matplotlib Visualization")
 
-    st.title("Cumulative Returns Visualization")
+#     st.title("Cumulative Returns Visualization")
 
-    # Select the columns to plot
-    selected_columns = st.multiselect('Select Stocks', dailyCumulSimpleReturn.columns)
+#     # Select the columns to plot
+#     selected_columns = st.multiselect('Select Stocks', dailyCumulSimpleReturn.columns)
 
-    # Create the plot
-    fig, ax = plt.subplots(figsize=(10, 6))
-    for col in selected_columns:
-        ax.plot(dailyCumulSimpleReturn.index, dailyCumulSimpleReturn[col].cumprod(), label=col)
+#     # Create the plot
+#     fig, ax = plt.subplots(figsize=(10, 6))
+#     for col in selected_columns:
+#         ax.plot(dailyCumulSimpleReturn.index, dailyCumulSimpleReturn[col].cumprod(), label=col)
 
-    ax.set_xlabel('Date')
-    ax.set_ylabel('Cumulative Return')
-    ax.set_title('Cumulative Returns of Selected Stocks')
-    ax.legend()
-    ax.grid(True)
-    st.pyplot(fig)
+#     ax.set_xlabel('Date')
+#     ax.set_ylabel('Cumulative Return')
+#     ax.set_title('Cumulative Returns of Selected Stocks')
+#     ax.legend()
+#     ax.grid(True)
+#     st.pyplot(fig)
     
-    plt.figure(figsize=(12.2, 6))
-    for c in dailyCumulSimpleReturn.columns.values:
-        plt.plot(dailyCumulSimpleReturn.index, dailyCumulSimpleReturn[c], lw=2, label=c)
+#     plt.figure(figsize=(12.2, 6))
+#     for c in dailyCumulSimpleReturn.columns.values:
+#         plt.plot(dailyCumulSimpleReturn.index, dailyCumulSimpleReturn[c], lw=2, label=c)
 
-    plt.grid(True)
-    plt.legend(loc='upper left', fontsize=10)
-    plt.xlabel('Date', fontsize=12)
-    plt.ylabel('Growth of $1 Investment', fontsize=12)
-    plt.title('Daily Cumulative Returns', fontsize=14)
+#     plt.grid(True)
+#     plt.legend(loc='upper left', fontsize=10)
+#     plt.xlabel('Date', fontsize=12)
+#     plt.ylabel('Growth of $1 Investment', fontsize=12)
+#     plt.title('Daily Cumulative Returns', fontsize=14)
 
-    # Show the plot in Streamlit
-    st.pyplot()
+#     # Show the plot in Streamlit
+#     st.pyplot()
 
-    # Visualization with Plotly
-    st.subheader("Dayly Cumulative Return")
-    fig = go.Figure()
+#     # Visualization with Plotly
+#     st.subheader("Dayly Cumulative Return")
+#     fig = go.Figure()
 
-    for c in dailyCumulSimpleReturn.columns.values:
-        fig.add_trace(go.Scatter(x=dailyCumulSimpleReturn.index,
-                                y=dailyCumulSimpleReturn[c],
-                                mode='lines+markers',
-                                name=c))
+#     for c in dailyCumulSimpleReturn.columns.values:
+#         fig.add_trace(go.Scatter(x=dailyCumulSimpleReturn.index,
+#                                 y=dailyCumulSimpleReturn[c],
+#                                 mode='lines+markers',
+#                                 name=c))
 
-    fig.update_layout(title='Daily Cumulative Returns',
-                    xaxis_title='Date',
-                    yaxis_title='Growth of $1 Investment',
-                    legend_title='Stocks',
-                    template='plotly_white')  # Clean template
+#     fig.update_layout(title='Daily Cumulative Returns',
+#                     xaxis_title='Date',
+#                     yaxis_title='Growth of $1 Investment',
+#                     legend_title='Stocks',
+#                     template='plotly_white')  # Clean template
 
-    # Display the interactive plot in Streamlit
-    st.plotly_chart(fig)  # Use st.plotly_chart() for Plotly figures only
+#     # Display the interactive plot in Streamlit
+#     st.plotly_chart(fig)  # Use st.plotly_chart() for Plotly figures only
 
 #Differente models to predict the price.
-def Prediction():
-    page_bg_img = '''
-    <style>
-    .stApp {
-    background-image: url("https://images.pexels.com/photos/4194857/pexels-photo-4194857.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=1000");
-    background-size: cover;
-    }
-    </style>
-    '''
-    # Assuming page_bg_img is defined somewhere in your code
-    st.markdown(page_bg_img, unsafe_allow_html=True)
-    symbols = 'https://raw.githubusercontent.com/Moly-malibu/AIApp/main/bxo_lmmS1.csv'
-    df = pd.read_csv(symbols)
-
-    # Get the current date and time correctly
-    now = pd.to_datetime('now')
-
-    tickerSymbol = st.sidebar.selectbox('Company List', (df['Symbol']))
-    tickerData = yf.Ticker(tickerSymbol)
-    tickerDf = tickerData.history(period='id', start='2019-01-01', end=now)
-    data = tickerDf.filter(['Close'])
-    dataset = data.values
-    company = yf.Ticker(tickerSymbol)
-    st.write('Web:', company.info["website"])
-    company_hist = st.sidebar.checkbox('Long Short Term Memory')
-    
-    if company_hist:
-        st.markdown("<h1 style='text-align: center; color: #002966;'>Long Short Term Memory</h1>", unsafe_allow_html=True)
-        
-        # Scaler data
-        train_len = math.ceil(len(dataset) * .8)
-        scaler = MinMaxScaler(feature_range=(0, 1))
-        scaled_data = scaler.fit_transform(dataset)
-        
-        train_data = scaled_data[0:train_len, :]
-        
-        # Train data preparation
-        x_train = []
-        y_train = []
-        
-        for i in range(60, len(train_data)):
-            x_train.append(train_data[i-60:i, 0])
-            y_train.append(train_data[i, 0])
-            if i <= 60:
-                print(x_train)
-                print(y_train)
-        
-        x_train, y_train = np.array(x_train), np.array(y_train)
-        x_train = np.reshape(x_train, (x_train.shape[0], x_train.shape[1], 1))  # Reshape for LSTM model
-        
-        # Model definition
-        model =tf.keras.Sequential()
-        model.add(LSTM(54, return_sequences=True, input_shape=(x_train.shape[1], 1)))
-        model.add(LSTM(50, return_sequences=False))
-        model.add(Dense(25))
-        model.add(Dense(1))
-        model.tf.keras.layers.Dense(10)
-
-        # Compile the model
-        model.compile(optimizer='adam', loss='mean_squared_error')
-        model.compile(loss='mean_squared_error', optimizer='adam')
-        model.fit(x_train, y_train, batch_size=1, epochs=1)
-
-
-        # Test data preparation
-        test_data = scaled_data[train_len - 60:, :]
-        x_test = []
-        y_test = dataset[train_len:, :]
-        
-        for i in range(60, len(test_data)):
-            x_test.append(test_data[i-60:i, 0])
-        
-        x_test = np.array(x_test)
-        x_test = np.reshape(x_test, (x_test.shape[0], x_test.shape[1], 1))
-        
-        predictions = model.predict(x_test)
-        predictions = scaler.inverse_transform(predictions)
-
-        # Graphic preparation
-        train = data[:train_len]
-        valid = data[train_len:]
-        valid['Predictions'] = predictions
-
-    st.markdown(page_bg_img, unsafe_allow_html=True)
+# def Prediction():
+#     page_bg_img = '''
+#     <style>
+#     .stApp {
+#     background-image: url("https://images.pexels.com/photos/4194857/pexels-photo-4194857.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=1000");
+#     background-size: cover;
+#     }
+#     </style>
+#     '''
+#     # Assuming page_bg_img is defined somewhere in your code
+#     st.markdown(page_bg_img, unsafe_allow_html=True)
 
     # symbols = 'https://raw.githubusercontent.com/Moly-malibu/AIApp/main/bxo_lmmS1.csv'
     # df = pd.read_csv(symbols)
-    # # #Firs model to predict price and accuracy
-    # now = pd.datetime('now')
+
+    # # Get the current date and time correctly
+    # now = pd.to_datetime('now')
+
     # tickerSymbol = st.sidebar.selectbox('Company List', (df['Symbol']))
     # tickerData = yf.Ticker(tickerSymbol)
     # tickerDf = tickerData.history(period='id', start='2019-01-01', end=now)
@@ -785,14 +712,92 @@ def Prediction():
     # dataset = data.values
     # company = yf.Ticker(tickerSymbol)
     # st.write('Web:', company.info["website"])
-    # company_hist = st.sidebar.checkbox('Long Short Term Memory')
+    # # company_hist = st.sidebar.checkbox('Long Short Term Memory')
+    
     # if company_hist:
     #     st.markdown("<h1 style='text-align: center; color: #002966;'>Long Short Term Memory</h1>", unsafe_allow_html=True)
+        
+    #     # Scaler data
+    #     train_len = math.ceil(len(dataset) * .8)
+    #     scaler = MinMaxScaler(feature_range=(0, 1))
+    #     scaled_data = scaler.fit_transform(dataset)
+        
+    #     train_data = scaled_data[0:train_len, :]
+        
+    #     # Train data preparation
+    #     x_train = []
+    #     y_train = []
+        
+    #     for i in range(60, len(train_data)):
+    #         x_train.append(train_data[i-60:i, 0])
+    #         y_train.append(train_data[i, 0])
+    #         if i <= 60:
+    #             print(x_train)
+    #             print(y_train)
+        
+    #     x_train, y_train = np.array(x_train), np.array(y_train)
+    #     x_train = np.reshape(x_train, (x_train.shape[0], x_train.shape[1], 1))  # Reshape for LSTM model
+        
+    #     # Model definition
+    #     model =tf.keras.Sequential()
+    #     model.add(LSTM(54, return_sequences=True, input_shape=(x_train.shape[1], 1)))
+    #     model.add(LSTM(50, return_sequences=False))
+    #     model.add(Dense(25))
+    #     model.add(Dense(1))
+    #     model.tf.keras.layers.Dense(10)
+
+    #     # Compile the model
+    #     model.compile(optimizer='adam', loss='mean_squared_error')
+    #     model.compile(loss='mean_squared_error', optimizer='adam')
+    #     model.fit(x_train, y_train, batch_size=1, epochs=1)
+
+    #     # Test data preparation
+    #     test_data = scaled_data[train_len - 60:, :]
+    #     x_test = []
+    #     y_test = dataset[train_len:, :]
+        
+    #     for i in range(60, len(test_data)):
+    #         x_test.append(test_data[i-60:i, 0])
+        
+    #     x_test = np.array(x_test)
+    #     x_test = np.reshape(x_test, (x_test.shape[0], x_test.shape[1], 1))
+        
+    #     predictions = model.predict(x_test)
+    #     predictions = scaler.inverse_transform(predictions)
+
+    #     # Graphic preparation
+    #     train = data[:train_len]
+    #     valid = data[train_len:]
+    #     valid['Predictions'] = predictions
+
+    # st.markdown(page_bg_img, unsafe_allow_html=True)
+
+    # symbols = 'https://raw.githubusercontent.com/Moly-malibu/AIApp/main/bxo_lmmS1.csv'
+    # df = pd.read_csv(symbols)
+
+    # # #Firs model to predict price and accuracy
+    # now = pd.to_datetime('now')
+    # tickerSymbol = st.sidebar.selectbox('Company List', (df['Symbol']))
+
+    # tickerData = yf.Ticker(tickerSymbol)
+    # tickerDf = tickerData.history(period='id', start='2019-01-01', end=now)
+    # data = tickerDf.filter(['Close'])
+    # dataset = data.values
+    # company = yf.Ticker(tickerSymbol)
+
+    # st.write('Web:', company.info["website"])
+    
+    # # company_hist = st.sidebar.checkbox('Long Short Term Memory')
+
+    # if company_hist:
+    #     st.markdown("<h1 style='text-align: center; color: #002966;'>Long Short Term Memory</h1>", unsafe_allow_html=True)
+
     #     #Scaler data
     #     train_len = math.ceil(len(dataset)*.8)
     #     scaler = MinMaxScaler(feature_range=(0,1))
     #     scaled_data = scaler.fit_transform(dataset)
     #     train_data = scaled_data[0:train_len, :]
+
     #     #train data
     #     x_train = []
     #     y_train = []
@@ -805,12 +810,13 @@ def Prediction():
     #     x_train, y_train = np.array(x_train), np.array(y_train)
     #     x_train = np.reshape(x_train, (x_train.shape[0], x_train.shape[1],1))        #Model
     #     model = Sequential()
-    #     # model.add(LSTM(50, return_sequences=True, input_shape=(x_train.shape[1],1)))
-    #     # model.add(LSTM(50, return_sequences=False))
+    #     model.add(LSTM(50, return_sequences=True, input_shape=(x_train.shape[1],1)))
+    #     model.add(LSTM(50, return_sequences=False))
     #     model.add(Dense(25))
     #     model.add(Dense(1))
     #     model.compile(optimizer='adam', loss='mean_squared_error')
     #     model.fit(x_train, y_train, batch_size=1, epochs=1)
+
     #     #Test data
     #     test_data = scaled_data[train_len - 60: , :]
     #     x_test = []
@@ -821,6 +827,7 @@ def Prediction():
     #     x_test = np.reshape(x_test, (x_test.shape[0], x_test.shape[1],1))
     #     predictions = model.predict(x_test)
     #     predictions = scaler.inverse_transform(predictions)
+
     #     #Graphic
     #     train = data[:train_len]
     #     valid = data[train_len:]
@@ -848,149 +855,230 @@ def Prediction():
     #     """)
     #     rmse = np.sqrt(np.mean(predictions - y_test)**2)
     #     st.write(rmse)
-#     #Second Model
-#     company_hist = st.sidebar.checkbox('Decision Tree Regression')
-#     if company_hist: 
-#         forcast_days = 25
-#         tickerDf['Prediction'] = tickerDf[['Close']].shift(-forcast_days)
-#         X=np.array(tickerDf.drop(['Prediction'], 1)[:-forcast_days].fillna(0))
-#         y=np.array(tickerDf['Prediction'])[:-forcast_days] 
-#         # #Train Data    
-#         x_train, x_test, y_train, y_test= train_test_split(X,y, test_size=0.25)
-#         tree = DecisionTreeRegressor().fit(x_train, y_train)
-#         x_future = tickerDf.drop(['Prediction'], 1)[:-forcast_days]
-#         x_future = x_future.tail(forcast_days)
-#         x_future = np.array(x_future)
-#         tree_prediction = tree.predict(x_future)
-#         st.markdown("<h1 style='text-align: center; color: #002966;'>Decision Tree Regression Model</h1>", unsafe_allow_html=True)
-#         # #Graph 
-#         predictions = tree_prediction
-#         valid = tickerDf[X.shape[0]:]
-#         valid['Predictions'] = predictions
-#         plt.figure(figsize=(16,8))
-#         plt.title('Model')
-#         plt.xlabel('Days')
-#         plt.ylabel('Close Price USD($)')
-#         plt.plot(tickerDf['Close'])
-#         plt.plot(valid[['Close', 'Predictions']])
-#         plt.legend(['orig', 'Val', 'Pred'])
-#         st.set_option('deprecation.showPyplotGlobalUse', False)
-#         st.pyplot()
-#         st.write('Prediction:', predictions) 
-#         st.write('Accuracy:', tree.score(x_train, y_train))
-#         tree_confidence = tree.score(x_test, y_test)
-#         st.write('Confidence:', tree_confidence)
-#     # Third Model
-#     company_hist = st.sidebar.checkbox('Linear Regression')
-#     if company_hist: 
-#         st.markdown("<h1 style='text-align: center; color: #002966;'>Linea Regression Model</h1>", unsafe_allow_html=True)
-#         forcast_days = 25
-#         tickerDf['Prediction'] = tickerDf[['Close']].shift(-forcast_days)
-#         X=np.array(tickerDf.drop(['Prediction'], 1)[:-forcast_days].fillna(0))
-#         y=np.array(tickerDf['Prediction'])[:-forcast_days] 
-#         x_future = tickerDf.drop(['Prediction'], 1)[:-forcast_days]
-#         x_future = x_future.tail(forcast_days)
-#         x_future = np.array(x_future)
-#         # #Train Data    
-#         x_train, x_test, y_train, y_test= train_test_split(X,y, test_size=0.25)
-#         lr = LinearRegression().fit(x_train, y_train)
-#         lr_prediction = lr.predict((x_future))
-#         lr_confidence = lr.score(x_test, y_test)
-#         #Prediction
-#         predictions = lr_prediction
-#         valid = tickerDf[X.shape[0]:]
-#         valid['Predictions'] = predictions
-#         plt.figure(figsize=(16,8))
-#         plt.title('Model')
-#         plt.xlabel('Days')
-#         plt.ylabel('Close Price USD($)')
-#         plt.plot(tickerDf['Close'])
-#         plt.plot(valid[['Close', 'Predictions']])
-#         plt.legend(['orig', 'Val', 'Pred'])
-#         st.set_option('deprecation.showPyplotGlobalUse', False)
-#         st.pyplot()
-#         st.write('Predictioin by LR:', predictions)
-#         st.write('Accuracy:', lr.score(x_train, y_train))
-#         st.write('linear Regression confidence:', lr_confidence)
-#     st.markdown("<h1 style='text-align: center; color: #002966;'>Compared Forecasting</h1>", unsafe_allow_html=True)
-#     new_predict = tickerDf['Close']
-#     st.write(tickerDf)
 
-# def ProfitIndustry():
-#     page_bg_img = '''
-#     <style>
-#     .stApp {
-#     background-image: url("https://img.freepik.com/free-photo/3d-geometric-abstract-cuboid-wallpaper-background_1048-9891.jpg?size=626&ext=jpg&ga=GA1.2.635976572.1603931911");
-#     background-size: cover;
-#     }
-#     </style>
-#     '''
-#     st.markdown(page_bg_img, unsafe_allow_html=True)
-#     st.markdown("<h1 style='text-align: center; color: #002966;'>Profit of Stock Market by Industry</h1>", unsafe_allow_html=True)
-#     symbols = 'https://raw.githubusercontent.com/Moly-malibu/AIApp/main/industAVG.csv'
-#     df = pd.read_csv(symbols)
-#     tickerSymbol = st.sidebar.selectbox('Company List', (df))
-#     company = yf.Ticker(tickerSymbol)
-#     analysis = company.history(period='max', interval='1wk')
-#     profile = ProfileReport(analysis, explorative=True)
-#     st_profile_report(profile)
+
+#     #Second Model
+    # from sklearn.model_selection import train_test_split, GridSearchCV
+    # from sklearn.ensemble import RandomForestRegressor
+    # import matplotlib.pyplot as plt
+
+    # company_hist = st.sidebar.checkbox('Decision Tree Regression')
+
+    # forcast_days = 25
+    # tickerDf['Prediction'] = tickerDf[['Close']].shift(-forcast_days)
+
+    # # Feature Engineering: Create additional features like moving averages
+    # tickerDf['MA_5'] = tickerDf['Close'].rolling(window=5).mean()
+    # tickerDf['MA_10'] = tickerDf['Close'].rolling(window=10).mean()
+    # tickerDf.dropna(inplace=True)  # Drop NaN values after creating moving averages
+
+    # X = np.array(tickerDf.drop(['Prediction'], axis=1)[:-forcast_days].fillna(0))
+    # y = np.array(tickerDf['Prediction'])[:-forcast_days]
+
+    # # Train-Test Split    
+    # x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.25)
+
+    # # Model Selection: Using Random Forest Regressor instead of Decision Tree Regressor
+    # model = RandomForestRegressor(n_estimators=100)
+    # model.fit(x_train, y_train)
+
+    # # Prepare future data for prediction
+    # x_future = tickerDf.drop(['Prediction'], axis=1)[-forcast_days:]
+    # x_future = np.array(x_future)
+
+    # # Predict future prices
+    # tree_prediction = model.predict(x_future)
+
+    # # Visualize Predictions
+    # valid = tickerDf[X.shape[0]:]
+    # valid['Predictions'] = np.nan  # Initialize Predictions column with NaN values
+    # valid.iloc[-forcast_days:, valid.columns.get_loc('Predictions')] = tree_prediction  # Fill in predictions
+
+    # # Streamlit Visualization
+    # st.markdown("<h1 style='text-align: center; color: #002966;'>Random Forest Regression Model</h1>", unsafe_allow_html=True)
+    # st.line_chart(valid[['Close', 'Predictions']])
+
+
+    # if company_hist: 
+    #     forcast_days = 25
+    #     tickerDf['Prediction'] = tickerDf[['Close']].shift(-forcast_days)
+    #     X=np.array(tickerDf.drop(['Prediction'], 1)[:-forcast_days].fillna(0))
+    #     y=np.array(tickerDf['Prediction'])[:-forcast_days] 
+
+    #     # #Train Data    
+    #     x_train, x_test, y_train, y_test= train_test_split(X,y, test_size=0.25)
+    #     tree = DecisionTreeRegressor().fit(x_train, y_train)
+    #     # x_future = tickerDf.drop(['Prediction'], 1)[:-forcast_days]
+    #     x_future = x_future.tail(forcast_days)
+    #     x_future = np.array(x_future)
+    #     tree_prediction = tree.predict(x_future)
+    #     st.markdown("<h1 style='text-align: center; color: #002966;'>Decision Tree Regression Model</h1>", unsafe_allow_html=True)
+
+    #     # #Graph 
+    #     predictions = tree_prediction
+    #     valid = tickerDf[X.shape[0]:]
+    #     valid['Predictions'] = predictions
+
+    #     plt.figure(figsize=(16,8))
+    #     plt.title('Model')
+    #     plt.xlabel('Days')
+    #     plt.ylabel('Close Price USD($)')
+    #     plt.plot(tickerDf['Close'])
+    #     plt.plot(valid[['Close', 'Predictions']])
+    #     plt.legend(['orig', 'Val', 'Pred'])
+    #     st.set_option('deprecation.showPyplotGlobalUse', False)
+    #     st.pyplot()
+    #     st.write('Prediction:', predictions) 
+    #     st.write('Accuracy:', tree.score(x_train, y_train))
+
+    #     tree_confidence = tree.score(x_test, y_test)
+        
+    #     st.write('Confidence:', tree_confidence)
+
+    # Third Model
+    # company_hist = st.sidebar.checkbox('Linear Regression')
+    
+    # if company_hist:     
+    #     st.markdown("<h1 style='text-align: center; color: #002966;'>Linea Regression Model</h1>", unsafe_allow_html=True)
+        
+    #     forcast_days = 25
+    #     tickerDf['Prediction'] = tickerDf[['Close']].shift(-forcast_days)
+    #     X = np.array(tickerDf.drop(['Prediction'], axis=1)[:-forcast_days].fillna(0))
+    #     y = np.array(tickerDf['Prediction'])[:-forcast_days]
+
+    #     # Prepare future data for prediction
+    #     x_future = tickerDf.drop(['Prediction'], axis=1).tail(forcast_days)
+    #     x_future = np.array(x_future)
+
+    #     # #Train Data    
+    #     x_train, x_test, y_train, y_test= train_test_split(X,y, test_size=0.25)
+    #     lr = LinearRegression().fit(x_train, y_train)
+    #     lr_prediction = lr.predict((x_future))
+    #     lr_confidence = lr.score(x_test, y_test)
+
+    #     #Prediction
+    #     predictions = lr_prediction
+    #     valid = tickerDf[X.shape[0]:]
+    #     valid['Predictions'] = predictions
+
+    #     plt.figure(figsize=(16,8))
+    #     plt.title('Model')
+    #     plt.xlabel('Days')
+    #     plt.ylabel('Close Price USD($)')
+    #     plt.plot(tickerDf['Close'])
+    #     plt.plot(valid[['Close', 'Predictions']])
+    #     plt.legend(['orig', 'Val', 'Pred'])
+    #     st.set_option('deprecation.showPyplotGlobalUse', False)
+
+    #     st.pyplot()
+    #     st.write('Predictioin by LR:', predictions)
+    #     st.write('Accuracy:', lr.score(x_train, y_train))
+    #     st.write('linear Regression confidence:', lr_confidence)
+
+    # st.markdown("<h1 style='text-align: center; color: #002966;'>Compared Forecasting</h1>", unsafe_allow_html=True)
+    # new_predict = tickerDf['Close']
+    # st.write(tickerDf)
         
 
-# def Statement():
-#     page_bg_img = '''
-#     <style>
-#     .stApp{
-#     background-image: url("https://images.pexels.com/photos/950241/pexels-photo-950241.jpeg?cs=srgb&dl=pexels-gdtography-950241.jpg&fm=jpg");
-#     background-size: cover;
-#     }
-#     </style>
-#     '''
-#     st.markdown(page_bg_img, unsafe_allow_html=True)
-#     st.markdown("<h1 style='text-align: center; color: #002966;'>Statement</h1>", unsafe_allow_html=True)
-#     symbols = 'https://raw.githubusercontent.com/Moly-malibu/AIApp/main/bxo_lmmS1.csv'
-#     df = pd.read_csv(symbols)
+def Statement():
+    page_bg_img = '''
+    <style>
+    .stApp{
+    background-image: url("https://images.pexels.com/photos/950241/pexels-photo-950241.jpeg?cs=srgb&dl=pexels-gdtography-950241.jpg&fm=jpg");
+    background-size: cover;
+    }
+    </style>
+    '''
+    st.markdown(page_bg_img, unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align: center; color: #002966;'>Statement</h1>", unsafe_allow_html=True)
 
-#     ticker = st.sidebar.selectbox('Stocks by Company', (df))
-#     tickerData = YahooFinancials(ticker)
-#     company = yf.Ticker(ticker)
-#     # st.write(company.info)
-#     st.write('Company Web:', company.info["website"])
-#     company_general = st.sidebar.checkbox("Financial Ratio")
+    symbols = 'https://raw.githubusercontent.com/Moly-malibu/AIApp/main/bxo_lmmS1.csv'
+    df = pd.read_csv(symbols)
 
-#     if company_general:
-#         st.markdown("<h1 style='text-align: center; color: #002966;'>Financial Ratios</h1>", unsafe_allow_html=True)
-#         st.write('***Payout Ratio:*** ', company.info["payoutRatio"])
-#         st.write('***Trailing Annual Dividend Yield:*** ', company.info["trailingAnnualDividendYield"])
-#         st.write('***Dividend Rate:***', company.info["dividendRate"])
-#         st.write('***Profit Margins:***', company.info["profitMargins"])
-#         st.write('***Peg Ratio:***', company.info["pegRatio"])
+    ticker = st.sidebar.selectbox('Stocks by Company', (df))
 
+    tickerData = YahooFinancials(ticker)
+    company = yf.Ticker(ticker)
 
-#         ticker = 'AAPL'  # Replace with your desired ticker
+    # st.write(company.info) #see json.
+    try:
+        website = company.info["website"]
+        if website is not None:
+                st.write('***website:***', website)
+        else:
+                st.write('***website:*** Information not available')
+    except KeyError:
+            st.write('***website:*** Information not available')
+    #exception:
+    try:
+        industry = company.info["industry"]
+        if industry is not None:
+                st.write('***Industry:***',industry)
+        else:
+                st.write('***Industry:*** Information not available')
+    except KeyError:
+            st.write('***Industry:*** Information not available')
 
-#         yahoo_financials = YahooFinancials(ticker)
+    company_general = st.sidebar.checkbox("Financial Ratio")
 
-#         marketcap = yahoo_financials.get_market_cap()
-#         st.write("Market Cap:", marketcap)
+    if company_general:
+        st.markdown("<h1 style='text-align: center; color: #002966;'>Financial Ratios</h1>", unsafe_allow_html=True)
+        try:
+            payout_ratio = company.info["payoutRatio"]
+            if payout_ratio is not None:
+                st.write('***Payout Ratio:***', payout_ratio)
+            else:
+                st.write('***Payout Ratio:*** Information not available')
+        except KeyError:
+            st.write('***Payout Ratio:*** Information not available')
+        # Exception
+        try:
+            trailingAnnualDividendYield = company.info["trailingAnnualDividendYield"]
+            if trailingAnnualDividendYield is not None:
+                st.write('***Trailing Annual Dividend Yield:***', trailingAnnualDividendYield)
+            else:
+                st.write('***Trailing Annual Dividend Yield:*** Information not available')
+        except KeyError:
+            st.write('***Trailing Annual Dividend Yield:*** Information not available')
+        # Exception
+        try:
+            dividendRate = company.info["dividendRate"]
+            if dividendRate is not None:
+                st.write('***Dividend Rate:***', dividendRate)
+            else:
+                st.write('***Dividend Rate:*** Information not available')
+        except KeyError:
+            st.write('***Dividend Rate:*** Information not available')
 
-#         price_to_sales = yahoo_financials.get_current_price()
-#         st.write("Current Price:", price_to_sales)
+        # Exception
+        try:
+            profitMargins = company.info["profitMargins"]
+            if profitMargins is not None:
+                st.write('***Profit Margins:***', profitMargins)
+            else:
+                st.write('***Profit Margins:*** Information not available')
+        except KeyError:
+            st.write('***Profit Margins:*** Information not available')
 
-#         dividend_yield = yahoo_financials.get_dividend_yield()
-#         st.write("Dividend Yield:", dividend_yield)
+        # Exception
+        try:
+            pegRatio = company.info["pegRatio"]
+            if pegRatio is not None:
+                st.write('***Peg Ratio:***', pegRatio)
+            else:
+                st.write('***Peg Ratio:*** Information not available')
+        except KeyError:
+            st.write('***Peg Ratio:*** Information not available')
 
-#         income_balance = si.get_income_statement(ticker)  # type: ignore
-#         st.write("Income Statement:", income_balance)
-
-#         transpose_income = income_balance.transpose()
-
-#         balance_income = si.get_balance_sheet(ticker)  # type: ignore
-#         st.write("Balance Sheet:", balance_income)
-
-#         transpose_balance = balance_income.transpose()
-
-#         st.write("""**Dividends**""", company.dividends)
-
+        # Exception
+        try:
+            marketCap = company.info["marketCap"]
+            if marketCap is not None:
+                st.write('***Market Capital:***', marketCap)
+            else:
+                st.write('***Market Capital:*** Information not available')
+        except KeyError:
+            st.write('***Market Capital:*** Information not available')
 
         
         # yahoo_financials = YahooFinancials(ticker)
@@ -1001,8 +1089,9 @@ def Prediction():
         # transpose_income=income_balance.transpose()
         # balance_income=si.get_balance_sheet(ticker) # type: ignore
         # transpose_balance=balance_income.transpose()
-
-        # st.write("""**Dividends**""", company.dividends) 
+        # st.write(transpose_balance)
+        
+        st.write("""**Dividends**""", company.dividends) 
         
 
     #     income=si.get_income_statement(ticker) # type: ignore
@@ -1152,90 +1241,90 @@ def Prediction():
     #         st.write(transpose) 
         # ...
 
-def Stock():
-    page_bg_img = """
-    <style>
-    .stApp {
-    background-image: url("https://images.pexels.com/photos/911738/pexels-photo-911738.jpeg?cs=srgb&dl=pexels-gdtography-911738.jpg&fm=jpg");
-    background-size: cover;
-    }
-    </style>
-    """
-    st.markdown(page_bg_img, unsafe_allow_html=True)
-    symbols = 'https://raw.githubusercontent.com/Moly-malibu/AIApp/main/bxo_lmmS1.csv'
-    df = pd.read_csv(symbols)
-    st.markdown("<h1 style='text-align: center; color: #002966;'>Financial Information</h1>", unsafe_allow_html=True)
-    st.write("""
-    Financial information from the companies and Stocks by years!
-    """)
-    start = st.sidebar.date_input("Date to Analysis")
-    st.sidebar.subheader("Index")
-    tickerSymbol2 = st.sidebar.selectbox('Stocks by Company', (df))
-    tickerData = yf.Ticker(tickerSymbol2)
-    tickerDf = tickerData.history(period='id', start=start, end=None)
-    company = yf.Ticker(tickerSymbol2)
-    company = yf.Ticker(tickerSymbol2)
-    st.write('Web:', company.info["website"])
-    # st.write(company.info)
-    company_general = st.sidebar.checkbox("Company Information")
+# def Stock():
+#     page_bg_img = """
+#     <style>
+#     .stApp {
+#     background-image: url("https://images.pexels.com/photos/911738/pexels-photo-911738.jpeg?cs=srgb&dl=pexels-gdtography-911738.jpg&fm=jpg");
+#     background-size: cover;
+#     }
+#     </style>
+#     """
+#     st.markdown(page_bg_img, unsafe_allow_html=True)
+#     symbols = 'https://raw.githubusercontent.com/Moly-malibu/AIApp/main/bxo_lmmS1.csv'
+#     df = pd.read_csv(symbols)
+#     st.markdown("<h1 style='text-align: center; color: #002966;'>Financial Information</h1>", unsafe_allow_html=True)
+#     st.write("""
+#     Financial information from the companies and Stocks by years!
+#     """)
+#     start = st.sidebar.date_input("Date to Analysis")
+#     st.sidebar.subheader("Index")
+#     tickerSymbol2 = st.sidebar.selectbox('Stocks by Company', (df))
+#     tickerData = yf.Ticker(tickerSymbol2)
+#     tickerDf = tickerData.history(period='id', start=start, end=None)
+#     company = yf.Ticker(tickerSymbol2)
+#     company = yf.Ticker(tickerSymbol2)
+#     st.write('Web:', company.info["website"])
+#     # st.write(company.info)
+#     company_general = st.sidebar.checkbox("Company Information")
 
-    if company_general:
-        st.markdown("<h1 style='text-align: center; color: #002966;'>General Information</h1>", unsafe_allow_html=True)
-        st.write('***Sector:***', company.info["sector"])
-        st.write('***Industry:***', company.info["industry"])
-        st.write('***Phone:***', company.info["phone"])
-        st.write('***Address:***', company.info["address1"])
-        st.write('***City:***', company.info["city"])
-        st.write('***Country:***', company.info["country"])
-        st.write('***Web:***', company.info["website"])
-        st.write('***Business Summary:***', '\n', company.info["longBusinessSummary"])
-        st.write('***Job Generator***', company.info["fullTimeEmployees"])
-    company_hist = st.sidebar.checkbox("Company Shares Asigned")
+#     if company_general:
+#         st.markdown("<h1 style='text-align: center; color: #002966;'>General Information</h1>", unsafe_allow_html=True)
+#         st.write('***Sector:***', company.info["sector"])
+#         st.write('***Industry:***', company.info["industry"])
+#         st.write('***Phone:***', company.info["phone"])
+#         st.write('***Address:***', company.info["address1"])
+#         st.write('***City:***', company.info["city"])
+#         st.write('***Country:***', company.info["country"])
+#         st.write('***Web:***', company.info["website"])
+#         st.write('***Business Summary:***', '\n', company.info["longBusinessSummary"])
+#         st.write('***Job Generator***', company.info["fullTimeEmployees"])
+#     company_hist = st.sidebar.checkbox("Company Shares Asigned")
 
-    if company_hist:
-            st.markdown("<h1 style='text-align: center; color: #002966;'>Company Shares  Asigned </h1>", unsafe_allow_html=True)
-            display_histo = company.major_holders
-            display_mh = company.history(period='max')
-            if display_histo.empty == True:
-                st.write("No data available")
-            else:
-                st.write(display_histo)
-    company_recomend = st.sidebar.checkbox("Stocks Recommendations")
+#     if company_hist:
+#             st.markdown("<h1 style='text-align: center; color: #002966;'>Company Shares  Asigned </h1>", unsafe_allow_html=True)
+#             display_histo = company.major_holders
+#             display_mh = company.history(period='max')
+#             if display_histo.empty == True:
+#                 st.write("No data available")
+#             else:
+#                 st.write(display_histo)
+#     company_recomend = st.sidebar.checkbox("Stocks Recommendations")
 
-    if company_recomend:
-            st.markdown("<h1 style='text-align: center; color: #002966;'>Stocks Recommendatios</h1>", unsafe_allow_html=True)    
-            display_recomend = company.recommendations
-            if display_recomend.empty == True:
-                st.write("No data available")
-            else:
-                st.write(display_recomend)
-    company_job = st.sidebar.checkbox("Action and Split")
+#     if company_recomend:
+#             st.markdown("<h1 style='text-align: center; color: #002966;'>Stocks Recommendatios</h1>", unsafe_allow_html=True)    
+#             display_recomend = company.recommendations
+#             if display_recomend.empty == True:
+#                 st.write("No data available")
+#             else:
+#                 st.write(display_recomend)
+#     company_job = st.sidebar.checkbox("Action and Split")
 
-    if company_job:
-        st.markdown("<h1 style='text-align: center; color: #002966;'>History Actions and Split</h1>", unsafe_allow_html=True)
-        data = {}
-        list = [(tickerSymbol2)]
-        for ticker in list:
-            ticker_object = yf.Ticker(ticker)
-            temp = pd.DataFrame.from_dict(ticker_object.info, orient='index')
-            temp.reset_index(inplace=True)
-            temp.columns = ['Attribute', 'Recent']
-            data[ticker] = temp
-        merge = pd.concat(data)
-        merge = merge.reset_index()
-        del merge['level_1']
-        merge.columns=['Ticker', 'Attribute', 'Recent'] 
-        split=company.history(period='max', interval='1wk')
-        st.sidebar.checkbox("Stock level")
-        st.write('Company History', split)
-    company_stadistic = st.sidebar.checkbox("Statistics")
+#     if company_job:
+#         st.markdown("<h1 style='text-align: center; color: #002966;'>History Actions and Split</h1>", unsafe_allow_html=True)
+#         data = {}
+#         list = [(tickerSymbol2)]
+#         for ticker in list:
+#             ticker_object = yf.Ticker(ticker)
+#             temp = pd.DataFrame.from_dict(ticker_object.info, orient='index')
+#             temp.reset_index(inplace=True)
+#             temp.columns = ['Attribute', 'Recent']
+#             data[ticker] = temp
+#         merge = pd.concat(data)
+#         merge = merge.reset_index()
+#         del merge['level_1']
+#         merge.columns=['Ticker', 'Attribute', 'Recent'] 
+#         split=company.history(period='max', interval='1wk')
+#         st.sidebar.checkbox("Stock level")
+#         st.write('Company History', split)
+#     company_stadistic = st.sidebar.checkbox("Statistics")
 
-    if company_stadistic:
-        st.markdown("<h1 style='text-align: center; color: #002966;'>Statistics</h1>", unsafe_allow_html=True)
-        data = yf.download((tickerSymbol2), start=start, end=None, group_by='tickers')
-        st.table(data.describe())
+#     if company_stadistic:
+#         st.markdown("<h1 style='text-align: center; color: #002966;'>Statistics</h1>", unsafe_allow_html=True)
+#         data = yf.download((tickerSymbol2), start=start, end=None, group_by='tickers')
+#         st.table(data.describe())
 
-    company_hist = st.sidebar.checkbox("Status of Evaluation")
+#     company_hist = st.sidebar.checkbox("Status of Evaluation")
 
     # if company_hist:
     #         st.markdown("<h1 style='text-align: center; color: #002966;'>Status of Evaluation</h1>", unsafe_allow_html=True)
@@ -1244,6 +1333,7 @@ def Stock():
     #             st.write("No data available")
     #         else:
     #             st.write(display_evaluation)
+    
 
 if __name__ == "__main__":
    main()
