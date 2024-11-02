@@ -1014,18 +1014,18 @@ def Statement():
     try:
         industry = company.info["industry"]
         if industry is not None:
-                st.write('***Industry:***',industry)
+            st.write('***Industry:***',industry)
         else:
-                st.write('***Industry:*** Information not available')
-    except KeyError:
             st.write('***Industry:*** Information not available')
-    
+    except KeyError:
+        st.write('***Industry:*** Information not available')
+
     company_general = st.sidebar.checkbox("Financial Statements")
+
     if company_general:
         st.markdown("<h1 style='text-align: center; color: #002966;'>Financial Statements</h1>", unsafe_allow_html=True)
     st.markdown(
     """
-    ***Overview***
     
     Determining which financial statement is "most important" depends on the user's objectives: 
     
@@ -1051,7 +1051,6 @@ def Statement():
     ***Importance***: It is often regarded as the most crucial statement by many users because it shows how profitable a company is during that time frame. It helps stakeholders understand operational efficiency and profitability metrics such as gross margin and net income
     """)
     st.write("""**Income Statement for each company**""", company.income_stmt) 
-
     st.markdown(
     """ 
     ***Cash Flow Statement***
@@ -1074,15 +1073,15 @@ def Statement():
     """)
     st.write("""**Balance for each company**""", company.balance_sheet)
 
-    company_general = st.sidebar.checkbox("Elements for Investment Analysis")
+    # company_general = st.sidebar.checkbox("Elements for Investment Analysis")
 
     # Exception
     if company_general:
         st.markdown("<h1 style='text-align: center; color: #002966;'>Financial Ratios</h1>", unsafe_allow_html=True)
-    st.subheader("""Relevant Financial Data:""")
+        st.subheader("""Relevant Financial Data:""")
     st.markdown(
     """ 
-    ***Price-to-Earnings (P/E) Ratio***: This ratio compares a company's current share price to its earnings per share (EPS). A high P/E may indicate that the stock is overvalued or that investors expect high growth rates in the future.
+    ***Price-to-Earnings (P/E) Ratio***: This ratio compares a company's current share price to its earnings per share (EPS). A high P/E may indicate that the stock is overvalued or that investors expect high growth rates in the future. 
     
     ***Price-to-Book (P/B) Ratio***: This measures a company's market value relative to its book value. A lower P/B ratio may suggest that the stock is undervalued.
     
@@ -1108,7 +1107,7 @@ def Statement():
 
     # Displaying the results #f"${market_cap:,.2f}"
     st.write(f"Current Price: ${current_price: .2f}")
-    st.write(f"Market Cap: ${market_cap: .2f}") 
+    st.write(f"Market Cap: ${market_cap: ,.2f}") 
     st.write(f"Earnings Per Share (EPS): ${eps: .2f}")
     st.write(f"Book Value: ${book_value: .2f}")
     st.write(f"P/E Ratio: {pe_ratio: .2f}" if pe_ratio else "P/E Ratio: Not available")
@@ -1116,7 +1115,62 @@ def Statement():
     st.write(f"Dividend Yield: {dividend_yield_percentage: .2f}%" if dividend_yield_percentage else "Dividend Yield: Not available")
 
     # company_general = st.sidebar.checkbox("Financial Statements")
+    st.markdown(
+    """
+    ***Price/Earnings Growth (PEG) Ratio***
 
+    ***Definition***: This ratio divides the P/E ratio by the expected annual growth rate of earnings.
+
+    ***Importance***: A PEG ratio of less than 1 suggests that a stock may be undervalued relative to its growth potential, making it a valuable metric for growth investors.
+    
+    """)
+
+    st.markdown(
+    """
+
+    """)
+
+    st.markdown(
+    """
+     
+    """)
+
+    st.markdown(
+    """
+     
+    """)
+
+
+    st.markdown(
+    """
+     
+    """)
+
+    st.markdown(
+    """
+     
+    """)
+    st.markdown(
+    """
+     
+    """)
+    st.markdown(
+    """
+     
+    """)
+    st.markdown(
+    """
+     
+    """)
+    st.markdown(
+    """
+     
+    """)
+    st.markdown(
+    """
+     
+    """)
+    
 
     # if company_general:
     #     st.markdown("<h1 style='text-align: center; color: #002966;'>Financial Ratios</h1>", unsafe_allow_html=True)
