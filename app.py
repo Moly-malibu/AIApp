@@ -1118,7 +1118,7 @@ def Portfolio():
     page_bg_img = '''
     <style>
     .stApp {
-    background-image: url("https://www.istockphoto.com/vector/white-luxury-abstract-background-with-vector-illustration-gm1497133340-519598971");
+    background-image: url("https://media.istockphoto.com/id/1222649586/photo/abstract-white-background.jpg?s=612x612&w=0&k=20&c=_J0fF3qMaChA13myriw4zi1YMMkBHZDGVI3lifaFSJA=");
     background-size: cover;
     }
     </style>
@@ -1138,8 +1138,9 @@ def Portfolio():
         """)
     
     stockStarData = st.sidebar.date_input("Select Date when you started to investing:")
-    company = tickerSymbol1 = st.multiselect("Select Companies to create the Portfolio", (df['Symbol']))
+    company = tickerSymbol1 = st.multiselect("Select Companies to create the Portfolio", (df['Symbol']), 'AAPL')
     button_clicked = st.sidebar.button("GO")
+    
     if company:
         def getmyportfolio(stock=tickerSymbol1, start=stockStarData, end=None):
             numAssets = len(tickerSymbol1)
@@ -1290,11 +1291,10 @@ def Portfolio():
     # Select the columns to plot
     selected_columns = st.multiselect('Select Stocks', dailyCumulSimpleReturn.columns)
 
-    # Create the plot
-    fig, ax = plt.subplots(figsize=(10, 6))
+    # Create the plot  
+    fig, ax = plt.subplots()
     for col in selected_columns:
         ax.plot(dailyCumulSimpleReturn.index, dailyCumulSimpleReturn[col].cumprod(), label=col)
-
     ax.set_xlabel('Date')
     ax.set_ylabel('Cumulative Return')
     ax.set_title('Cumulative Returns of Selected Stocks')
@@ -1302,10 +1302,9 @@ def Portfolio():
     ax.grid(True)
     st.pyplot(fig)
     
-    plt.figure(figsize=(12.2, 6))
+    plt.figure()
     for c in dailyCumulSimpleReturn.columns.values:
         plt.plot(dailyCumulSimpleReturn.index, dailyCumulSimpleReturn[c], lw=2, label=c)
-
     plt.grid(True)
     plt.legend(loc='upper left', fontsize=10)
     plt.xlabel('Date', fontsize=12)
@@ -1318,7 +1317,6 @@ def Portfolio():
     # Visualization with Plotly
     st.subheader("Dayly Cumulative Return")
     fig = go.Figure()
-
     for c in dailyCumulSimpleReturn.columns.values:
         fig.add_trace(go.Scatter(x=dailyCumulSimpleReturn.index,
                                 y=dailyCumulSimpleReturn[c],
@@ -1329,10 +1327,11 @@ def Portfolio():
                     xaxis_title='Date',
                     yaxis_title='Growth of $1 Investment',
                     legend_title='Stocks',
-                    template='plotly_white')  # Clean template
+                    template='plotly_white')  # Clean template 
 
     # Display the interactive plot in Streamlit
     st.plotly_chart(fig)  # Use st.plotly_chart() for Plotly figures only
+    
 def Stock():
     page_bg_img = """
     <style>
@@ -1476,7 +1475,7 @@ def Prediction():     #Differente models to predict the price.
     page_bg_img = '''
     <style>
     .stApp {
-    background-image: url("https://media.istockphoto.com/id/537619144/es/foto/abstracto-3d-blanco-interior-contempor%C3%A1neo.jpg?s=612x612&w=0&k=20&c=cLKwTsl0j69zHeIq9G4GH8_XinP1xC2eIAztcr7veB0=");
+    background-image: url("https://media.istockphoto.com/id/1472970255/photo/3d-abstract-white-and-gray-color-modern-design-background-with-curve-line-3d-render.jpg?s=612x612&w=0&k=20&c=cl-AgMDsB-FdgNnmWceX5YuZkwoDfpum5z66mzi-HcA=");
     background-size: cover;
     }
     </style>
