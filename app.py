@@ -1484,6 +1484,7 @@ def Prediction():     #Differente models to predict the price.
     st.title("Predicting Stock Prices")
     st.markdown(
     """ 
+    
     ***Decision Tree Regression:***
 
     ***Single Tree***:      A decision tree is a single model that makes decisions based on a series of if-else conditions.
@@ -1616,8 +1617,33 @@ def Prediction():     #Differente models to predict the price.
         df.fillna(method='ffill', inplace=True)  # Forward fill for NaN values
         return df
 
-    # Streamlit app starts here
+    #MODELS
     st.title("Stock Price Prediction App")
+    st.markdown(
+    """ 
+    ***Linear Regression Analysis:***
+    
+    Linear regression is a fundamental statistical method used to model the relationship between a dependent variable and one or more independent variables. It serves as a powerful tool for predictive analysis and can help in understanding how changes in predictor variables affect an outcome variable.
+    
+    ***Applications of Linear Regression***
+    
+    Linear regression is widely used across various fields for:
+    
+    ***Predictive Modeling***: Forecasting outcomes based on historical data, such as predicting sales based on marketing spend.
+    
+    ***Trend Analysis***: Identifying trends over time, such as analyzing how temperature affects ice cream sales.
+    
+    ***Quantifying Relationships***: Determining the strength and nature of relationships between variables, like assessing how education level impacts income24.
+    
+    
+    ***Conclusion:***
+    
+    Linear regression remains a cornerstone of statistical analysis due to its simplicity and interpretability. It provides insights into relationships between variables and assists in making informed predictions based on data. By adhering to its assumptions and understanding its applications, analysts can effectively leverage linear regression in their research and decision-making processes.
+        
+    
+    
+    
+    """)
     if st.button("Load Data"):
         if ticker and start_date and end_date:
             df = load_data(ticker, start_date, end_date)
