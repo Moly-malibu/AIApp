@@ -9,6 +9,7 @@ from pandas.core import groupby
 from datetime import date, timedelta
 
 from requests.api import options 
+import seaborn as sns
 
 import numpy
 import numpy as np
@@ -1162,7 +1163,7 @@ def Portfolio():
         correlation_matrix = daily_returns.corr()
 
         # Display the correlation matrix as a heatmap
-        import seaborn as sns
+        
         st.subheader("Stock Correlation Heatmap")
         
         plt.figure(figsize=(10, 8))
