@@ -11,10 +11,8 @@ keras
 yahoofinancials  
 yahoo_fin 
 mpld3
-plotly.graph_objects
-plotly.graph_objs
-plotly.express
+plotly
 os
 yahoo_fin
 go
- 
+
