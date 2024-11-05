@@ -57,9 +57,10 @@ from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.metrics import mean_absolute_error, r2_score
-
-
 from sklearn.preprocessing import OneHotEncoder
+
+import plotly.graph_objects as go
+import plotly.express as px
 
 
 from bs4 import BeautifulSoup
@@ -71,8 +72,6 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 plt.style.use('fivethirtyeight')
 from matplotlib import style
-import plotly.graph_objs as go
-import plotly.express as px
 style.use('ggplot')
 
 st.markdown("<h1 style='text-align: center; color: #002967;'>Revolutionize Your Investments:</h1>", unsafe_allow_html=True)
@@ -1472,6 +1471,7 @@ def Prediction():     #Differente models to predict the price.
     import numpy as np
     from sklearn.model_selection import train_test_split
     import plotly.graph_objs as go
+    import plotly.express as px
     page_bg_img = '''
     <style>
     .stApp {

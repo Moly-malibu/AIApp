@@ -3,8 +3,7 @@ pandas
 NumPy
 matplotlib  
 bs4 
-beautifulsoup4  
-streamlit-pandas-profiling  
+beautifulsoup4   
 yfinance  
 scikit-learn 
 tensorflow   
@@ -13,6 +12,5 @@ yahoofinancials
 yahoo_fin 
 mpld3
 plotly.graph_objs
-bs4
 os
 yahoo_fin
