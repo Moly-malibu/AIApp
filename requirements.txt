@@ -12,7 +12,6 @@ yahoofinancials
 yahoo_fin 
 mpld3
 plotly
-os
 yahoo_fin
 go
 
