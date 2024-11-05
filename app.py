@@ -1355,7 +1355,7 @@ def Stock():
     tickerDf = tickerData.history(period='id', start=start, end=None)
 
     company = yf.Ticker(tickerSymbol2)
-    st.write('Web:', company.info["website"])
+    st.write('web:', company.info["website"])
     # st.write(company.info)
     company_general = st.sidebar.checkbox("Company Information")
 
