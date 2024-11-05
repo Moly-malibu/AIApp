@@ -1138,7 +1138,7 @@ def Portfolio():
         """)
     
     stockStarData = st.sidebar.date_input("Select Date when you started to investing:")
-    company = tickerSymbol1 = st.multiselect("Select Companies to create the Portfolio", (df['Symbol']), 'AAPL')
+    company = tickerSymbol1 = st.multiselect("Select Companies to create the Portfolio", (df['Symbol']), 'AAPL', "AA")
     button_clicked = st.sidebar.button("GO")
     
     if company:
