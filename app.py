@@ -6,6 +6,7 @@ import pandas as pd
 from pandas.core.reshape.merge import merge
 from pandas._config.config import reset_option
 from pandas.core import groupby
+from datetime import date, timedelta
 
 from requests.api import options 
 
@@ -33,19 +34,12 @@ from yahoo_fin import options as ops
 #Prediction
 import math
 import sklearn
-from sklearn.preprocessing import MinMaxScaler
-from sklearn.tree import DecisionTreeRegressor
-from sklearn.linear_model import LinearRegression
-from sklearn.model_selection import train_test_split
-from sklearn.svm import SVR
-from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
-
-from bs4 import BeautifulSoup
-import scipy as sp
-import mpld3
 
 import keras
+from tensorflow.keras import backend as K
+K.clear_session()
 import tensorflow as tf
+from tensorflow.keras.models import load_model
 tf.compat.v1.get_default_graph()
 tf.keras.models.Model()
 from tensorflow import keras
@@ -53,9 +47,25 @@ from tensorflow.python.keras.layers import Dense, Flatten, Conv2D
 from tensorflow.python.keras import Model
 from tensorflow.python.keras.models import Sequential
 from tensorflow.python.keras import layers
-# from tensorflow.keras.models import Sequential
-# from tensorflow.keras.layers import Dense, LSTM
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+from sklearn.svm import SVR
+from tensorflow.keras.layers import Dense, LSTM, Dropout, BatchNormalization
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
+from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.metrics import mean_absolute_error, r2_score
 
+
+from sklearn.preprocessing import OneHotEncoder
+
+
+from bs4 import BeautifulSoup
+import scipy as sp
+import mpld3
+    
 #visualization
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -76,7 +86,7 @@ def main():
         "Index": Index,
         'Statement': Statement,
         'Portfolio': Portfolio,
-        # "Prediction": Prediction,
+        "Prediction": Prediction,
         "IndustryAVG": IndustryAVG,
     }
     st.sidebar.title("Companies Analysis")
@@ -252,24 +262,6 @@ def Statement():
     except KeyError:
         st.write('***Industry:*** Information not available')
     
-    company_general = st.sidebar.checkbox("Quick_Ratio")
-    if company_general:
-        st.subheader("""**Quick Ratio**""")
-        quick_ratio = (company.info["quickRatio"])
-        if not quick_ratio:
-            st.write("No data available")
-        else:
-            st.write('***Quick Ratio:*** (CurrentAssets - Inventory)/Current Liabilities)')
-            st.write(f'Quick Ratio: ${quick_ratio:,.2f}')
-            
-    company_hist = st.sidebar.checkbox("recommendations")
-    if company_hist:
-            st.markdown("<h1 style='text-align: center; color: #002966;'>recommendations</h1>", unsafe_allow_html=True)
-            finan = company.recommendations_summary
-            if finan.empty == True:
-                st.write("No data available")
-            else:
-                st.write(finan)
     company_hist = st.sidebar.checkbox("Earnings History")
     if company_hist:
             st.markdown("<h1 style='text-align: center; color: #002966;'>Earnings History</h1>", unsafe_allow_html=True)
@@ -503,6 +495,8 @@ def Statement():
     st.write(f"Current Price: ${current_price: .2f}")
     # st.write(f"Market Cap: ${market_cap: ,.2f}") 
     st.write(f"Earnings Per Share (EPS): ${eps: .2f}")
+    quick_ratio = (company.info["quickRatio"])
+    st.write(f'Quick Ratio: ${quick_ratio:,.2f}')
     # st.write(f"Book Value: ${book_value: .2f}")
     # st.write(f"P/E Ratio: {pe_ratio: .2f}" if pe_ratio else "P/E Ratio: Not available")
     # st.write(f"P/B Ratio: {pb_ratio: .2f}" if pb_ratio else "P/B Ratio: Not available")
@@ -746,84 +740,83 @@ def Statement():
             st.write(f"ROA ${roa: ,.2f}")
             
     # #GRAPHIC 
-    # Set the title of the app
-    st.title('Stock Ticker Statistics')
+    st.title('Advanced Stock Ticker Statistics')
 
     ## Input for stock ticker symbol
     ticker_symbol = st.text_input('Enter Stock Ticker Symbol', 'AAPL')
 
+    ## Date range selection
+    col1, col2 = st.columns(2)
+    with col1:
+        start_date = st.date_input("Start Date", date(2020, 1, 1))
+    with col2:
+        end_date = st.date_input("End Date", date.today())
+
     # Fetch data from yfinance
     if ticker_symbol:
-        data = yf.download(ticker_symbol, start="2020-01-01", end="2024-01-01")
-        
-        # Check if data is available
-        if not data.empty:
-            # Create a line chart for the closing price
-            fig = go.Figure()
-            fig.add_trace(go.Scatter(x=data.index, y=data['Close'], mode='lines', name='Close Price'))
+        if start_date <= end_date:
+            data = yf.download(ticker_symbol, start=start_date, end=end_date)
+            
+            if not data.empty:
+                # Calculate daily returns
+                data['Daily Return'] = data['Close'].pct_change()
 
-            # Update layout of the figure
-            fig.update_layout(title=f'{ticker_symbol} Closing Prices',
-                            xaxis_title='Date',
-                            yaxis_title='Price (USD)',
-                            template='plotly_dark')
+                # 1. Candlestick chart
+                fig_candlestick = go.Figure(data=[go.Candlestick(x=data.index,
+                    open=data['Open'], high=data['High'],
+                    low=data['Low'], close=data['Close'])])
+                fig_candlestick.update_layout(title=f'{ticker_symbol} Candlestick Chart',
+                                            xaxis_title='Date', yaxis_title='Price (USD)')
+                st.plotly_chart(fig_candlestick)
 
-            # Display the figure in Streamlit
-            st.plotly_chart(fig)
-        else:
-            st.error("No data found for the given ticker symbol.")  
+                # 2. Histogram of daily returns
+                fig_hist = px.histogram(data, x='Daily Return', nbins=50)
+                fig_hist.update_layout(title=f'{ticker_symbol} Daily Returns Distribution',
+                                    xaxis_title='Daily Return', yaxis_title='Frequency')
+                st.plotly_chart(fig_hist)
+
+                # 3. Box plot of monthly returns
+                data['Month'] = data.index.to_period('M')
+                monthly_returns = data.groupby('Month')['Daily Return'].sum().reset_index()
+                monthly_returns['Month'] = monthly_returns['Month'].astype(str)  # Convert Period to string
+                fig_box = px.box(monthly_returns, x='Month', y='Daily Return')
+                fig_box.update_layout(title=f'{ticker_symbol} Monthly Returns Box Plot',
+                                    xaxis_title='Month', yaxis_title='Monthly Return')
+                st.plotly_chart(fig_box)
+
+                # 4. Rolling statistics
+                window = 20
+                data['Rolling Mean'] = data['Close'].rolling(window=window).mean()
+                data['Rolling Std'] = data['Close'].rolling(window=window).std()
                 
-    # # Define the stock ticker symbol
-    # ticker = 'AAPL'  # Example: Apple Inc.
+                fig_rolling = go.Figure()
+                fig_rolling.add_trace(go.Scatter(x=data.index, y=data['Close'], mode='lines', name='Close Price'))
+                fig_rolling.add_trace(go.Scatter(x=data.index, y=data['Rolling Mean'], mode='lines', name=f'{window}-day Moving Average'))
+                fig_rolling.add_trace(go.Scatter(x=data.index, y=data['Rolling Std'], mode='lines', name=f'{window}-day Standard Deviation'))
+                fig_rolling.update_layout(title=f'{ticker_symbol} Rolling Statistics',
+                                        xaxis_title='Date', yaxis_title='Price (USD)')
+                st.plotly_chart(fig_rolling)
 
-    # # Fetch historical data for the specified ticker
-    # data = yf.download(ticker, start='2020-01-01', end='2024-01-01')
+                # 5. Correlation heatmap with other major stocks
+                major_tickers = ['AAPL', 'GOOGL', 'MSFT', 'AMZN', 'META']  # Updated FB to META
+                if ticker_symbol not in major_tickers:
+                    major_tickers.append(ticker_symbol)
+                
+                corr_data = yf.download(major_tickers, start=start_date, end=end_date)['Close']
+                correlation = corr_data.corr()
+                
+                fig_heatmap = px.imshow(correlation, text_auto=True, aspect="auto")
+                fig_heatmap.update_layout(title='Correlation Heatmap with Major Stocks')
+                st.plotly_chart(fig_heatmap)
 
-    # # Display the first few rows of the dataset
-    # print(data.head())
-    
-    # # Calculate daily returns
-    # data['Daily Return'] = data['Adj Close'].pct_change()
+                # Display summary statistics
+                st.subheader('Summary Statistics')
+                st.write(data['Close'].describe())
 
-    # # Calculate moving averages
-    # data['30 Day MA'] = data['Adj Close'].rolling(window=30).mean()
-    # data['100 Day MA'] = data['Adj Close'].rolling(window=100).mean()
-
-    # # Plotting Closing Prices and Moving Averages
-    # plt.figure(figsize=(14, 7))
-    # plt.plot(data['Adj Close'], label='Adjusted Close Price', color='blue')
-    # plt.plot(data['30 Day MA'], label='30 Day Moving Average', color='orange')
-    # plt.plot(data['100 Day MA'], label='100 Day Moving Average', color='green')
-    # plt.title(f'{ticker} Stock Price and Moving Averages')
-    # plt.xlabel('Date')
-    # plt.ylabel('Price (USD)')
-    # plt.legend()
-    # plt.show()
-
-    # # Plotting Daily Returns
-    # plt.figure(figsize=(14, 7))
-    # plt.hist(data['Daily Return'].dropna(), bins=50, alpha=0.75)
-    # plt.title(f'Daily Returns Histogram for {ticker}')
-    # plt.xlabel('Daily Return')
-    # plt.ylabel('Frequency')
-    # plt.show()
-    
-    # import plotly.graph_objs as go
-
-    # # Create a Plotly figure
-    # fig = go.Figure()
-
-    # # Add traces for Adjusted Close Price and Moving Averages
-    # fig.add_trace(go.Scatter(x=data.index, y=data['Adj Close'], mode='lines', name='Adjusted Close'
-    
-
-            
-            
-#########################################
-   
-
-        ...    
-# # Analysis stocks companies by close and volume
+            else:
+                st.error("No data found for the given ticker symbol and date range.")
+        else:
+            st.error("Error: End date must fall after start date.")        
 def IndustryAVG(): 
     page_bg_img = '''
     <style>
@@ -846,37 +839,53 @@ def IndustryAVG():
     company = tickerSymbol1 = st.sidebar.multiselect("Select Industry Stock be compared", (df))
 
     # Set up the Streamlit app title
-    st.title('Stock Price Analysis Dashboard')
+    st.title('Stock Market Indices Analysis')
 
     # Sidebar for user input
     st.sidebar.header('User Input')
-    ticker_input = st.sidebar.text_input('Enter Stock Ticker', value='^RUT')
+    ticker_input = st.sidebar.text_input('Enter Stock Ticker', value='^DJI')
 
-    # Fetch and display data based on user input
-    if ticker_input:
-        data = yf.download(ticker_input, start='2020-01-01', end='2024-01-01')
-        data['Daily Return'] = data['Adj Close'].pct_change()
-        data['30 Day MA'] = data['Adj Close'].rolling(window=30).mean()
-        data['100 Day MA'] = data['Adj Close'].rolling(window=100).mean()
+    # Date range selection
+    st.sidebar.subheader('Select Date Range')
+    default_start = date(2020, 1, 1)
+    default_end = date.today()
 
-        # Plotting the stock price and moving averages
-        fig = go.Figure()
-        fig.add_trace(go.Scatter(x=data.index, y=data['Adj Close'], mode='lines', name='Adjusted Close'))
-        fig.add_trace(go.Scatter(x=data.index, y=data['30 Day MA'], mode='lines', name='30 Day MA'))
-        fig.add_trace(go.Scatter(x=data.index, y=data['100 Day MA'], mode='lines', name='100 Day MA'))
+    start_date = st.sidebar.date_input('Start Date', value=default_start)
+    end_date = st.sidebar.date_input('End Date', value=default_end)
 
-        # Update layout of the figure
-        fig.update_layout(title=f'{ticker_input} Stock Price and Moving Averages',
-                        xaxis_title='Date',
-                        yaxis_title='Price (USD)',
-                        template='plotly_dark')
+    # Ensure end date is not before start date
+    if start_date > end_date:
+        st.sidebar.error('Error: End date must be after start date.')
+    else:
+        # Fetch and display data based on user input
+        if ticker_input:
+            data = yf.download(ticker_input, start=start_date, end=end_date)
+            
+            if not data.empty:
+                data['Daily Return'] = data['Adj Close'].pct_change()
+                data['30 Day MA'] = data['Adj Close'].rolling(window=30).mean()
+                data['100 Day MA'] = data['Adj Close'].rolling(window=100).mean()
 
-        # Display the figure in Streamlit
-        st.plotly_chart(fig)
+                # Plotting the stock price and moving averages
+                fig = go.Figure()
+                fig.add_trace(go.Scatter(x=data.index, y=data['Adj Close'], mode='lines', name='Adjusted Close'))
+                fig.add_trace(go.Scatter(x=data.index, y=data['30 Day MA'], mode='lines', name='30 Day MA'))
+                fig.add_trace(go.Scatter(x=data.index, y=data['100 Day MA'], mode='lines', name='100 Day MA'))
 
-        # Show daily returns histogram
-        st.subheader('Daily Returns Histogram')
-        st.bar_chart(data['Daily Return'].dropna())
+                # Update layout of the figure
+                fig.update_layout(title=f'{ticker_input} Stock Price and Moving Averages',
+                                xaxis_title='Date',
+                                yaxis_title='Price (USD)',
+                                template='plotly_dark')
+
+                # Display the figure in Streamlit
+                st.plotly_chart(fig)
+
+                # Show daily returns histogram
+                st.subheader('Daily Returns Histogram')
+                st.bar_chart(data['Daily Return'].dropna())
+            else:
+                st.error(f"No data available for {ticker_input} in the selected date range.")
     
     
 
@@ -1004,7 +1013,6 @@ def IndustryAVG():
 
         ---
         """)
-
 def Index():        
     page_bg_img = '''
     <style>
@@ -1108,7 +1116,6 @@ def Index():
             
         else:
             st.write("No data available for the selected stocks.")
-
 # Portfolio
 def Portfolio():
     page_bg_img = '''
@@ -1329,303 +1336,6 @@ def Portfolio():
 
     # Display the interactive plot in Streamlit
     st.plotly_chart(fig)  # Use st.plotly_chart() for Plotly figures only
-
-#Differente models to predict the price.
-# def Prediction():
-#     page_bg_img = '''
-#     <style>
-#     .stApp {
-#     background-image: url("https://images.pexels.com/photos/4194857/pexels-photo-4194857.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=1000");
-#     background-size: cover;
-#     }
-#     </style>
-#     '''
-#     # Assuming page_bg_img is defined somewhere in your code
-#     st.markdown(page_bg_img, unsafe_allow_html=True)
-
-    # symbols = 'https://raw.githubusercontent.com/Moly-malibu/AIApp/main/bxo_lmmS1.csv'
-    # df = pd.read_csv(symbols)
-
-    # # Get the current date and time correctly
-    # now = pd.to_datetime('now')
-
-    # tickerSymbol = st.sidebar.selectbox('Company List', (df['Symbol']))
-    # tickerData = yf.Ticker(tickerSymbol)
-    # tickerDf = tickerData.history(period='id', start='2019-01-01', end=now)
-    # data = tickerDf.filter(['Close'])
-    # dataset = data.values
-    # company = yf.Ticker(tickerSymbol)
-    # st.write('Web:', company.info["website"])
-    # # company_hist = st.sidebar.checkbox('Long Short Term Memory')
-    
-    # if company_hist:
-    #     st.markdown("<h1 style='text-align: center; color: #002966;'>Long Short Term Memory</h1>", unsafe_allow_html=True)
-        
-    #     # Scaler data
-    #     train_len = math.ceil(len(dataset) * .8)
-    #     scaler = MinMaxScaler(feature_range=(0, 1))
-    #     scaled_data = scaler.fit_transform(dataset)
-        
-    #     train_data = scaled_data[0:train_len, :]
-        
-    #     # Train data preparation
-    #     x_train = []
-    #     y_train = []
-        
-    #     for i in range(60, len(train_data)):
-    #         x_train.append(train_data[i-60:i, 0])
-    #         y_train.append(train_data[i, 0])
-    #         if i <= 60:
-    #             print(x_train)
-    #             print(y_train)
-        
-    #     x_train, y_train = np.array(x_train), np.array(y_train)
-    #     x_train = np.reshape(x_train, (x_train.shape[0], x_train.shape[1], 1))  # Reshape for LSTM model
-        
-    #     # Model definition
-    #     model =tf.keras.Sequential()
-    #     model.add(LSTM(54, return_sequences=True, input_shape=(x_train.shape[1], 1)))
-    #     model.add(LSTM(50, return_sequences=False))
-    #     model.add(Dense(25))
-    #     model.add(Dense(1))
-    #     model.tf.keras.layers.Dense(10)
-
-    #     # Compile the model
-    #     model.compile(optimizer='adam', loss='mean_squared_error')
-    #     model.compile(loss='mean_squared_error', optimizer='adam')
-    #     model.fit(x_train, y_train, batch_size=1, epochs=1)
-
-    #     # Test data preparation
-    #     test_data = scaled_data[train_len - 60:, :]
-    #     x_test = []
-    #     y_test = dataset[train_len:, :]
-        
-    #     for i in range(60, len(test_data)):
-    #         x_test.append(test_data[i-60:i, 0])
-        
-    #     x_test = np.array(x_test)
-    #     x_test = np.reshape(x_test, (x_test.shape[0], x_test.shape[1], 1))
-        
-    #     predictions = model.predict(x_test)
-    #     predictions = scaler.inverse_transform(predictions)
-
-    #     # Graphic preparation
-    #     train = data[:train_len]
-    #     valid = data[train_len:]
-    #     valid['Predictions'] = predictions
-
-    # st.markdown(page_bg_img, unsafe_allow_html=True)
-
-    # symbols = 'https://raw.githubusercontent.com/Moly-malibu/AIApp/main/bxo_lmmS1.csv'
-    # df = pd.read_csv(symbols)
-
-    # # #Firs model to predict price and accuracy
-    # now = pd.to_datetime('now')
-    # tickerSymbol = st.sidebar.selectbox('Company List', (df['Symbol']))
-
-    # tickerData = yf.Ticker(tickerSymbol)
-    # tickerDf = tickerData.history(period='id', start='2019-01-01', end=now)
-    # data = tickerDf.filter(['Close'])
-    # dataset = data.values
-    # company = yf.Ticker(tickerSymbol)
-
-    # st.write('Web:', company.info["website"])
-    
-    # # company_hist = st.sidebar.checkbox('Long Short Term Memory')
-
-    # if company_hist:
-    #     st.markdown("<h1 style='text-align: center; color: #002966;'>Long Short Term Memory</h1>", unsafe_allow_html=True)
-
-    #     #Scaler data
-    #     train_len = math.ceil(len(dataset)*.8)
-    #     scaler = MinMaxScaler(feature_range=(0,1))
-    #     scaled_data = scaler.fit_transform(dataset)
-    #     train_data = scaled_data[0:train_len, :]
-
-    #     #train data
-    #     x_train = []
-    #     y_train = []
-    #     for i in range(60, len(train_data)):
-    #         x_train.append(train_data[i-60:i,0])
-    #         y_train.append(train_data[i,0])
-    #         if i<=60:
-    #             print(x_train)
-    #             print(y_train)
-    #     x_train, y_train = np.array(x_train), np.array(y_train)
-    #     x_train = np.reshape(x_train, (x_train.shape[0], x_train.shape[1],1))        #Model
-    #     model = Sequential()
-    #     model.add(LSTM(50, return_sequences=True, input_shape=(x_train.shape[1],1)))
-    #     model.add(LSTM(50, return_sequences=False))
-    #     model.add(Dense(25))
-    #     model.add(Dense(1))
-    #     model.compile(optimizer='adam', loss='mean_squared_error')
-    #     model.fit(x_train, y_train, batch_size=1, epochs=1)
-
-    #     #Test data
-    #     test_data = scaled_data[train_len - 60: , :]
-    #     x_test = []
-    #     y_test = dataset[train_len:, :]
-    #     for i in range(60, len(test_data)):
-    #         x_test.append(test_data[i-60:i,0])
-    #     x_test = np.array(x_test)
-    #     x_test = np.reshape(x_test, (x_test.shape[0], x_test.shape[1],1))
-    #     predictions = model.predict(x_test)
-    #     predictions = scaler.inverse_transform(predictions)
-
-    #     #Graphic
-    #     train = data[:train_len]
-    #     valid = data[train_len:]
-    #     valid['Predictions'] = predictions
-
-    #     plt.figure(figsize=(16,8))
-    #     plt.title('Model')
-    #     plt.xlabel('Date', fontsize=18)
-    #     plt.ylabel('Close Price USD($)', fontsize=18)
-    #     plt.plot(train['Close'])
-    #     plt.plot(valid[['Close', 'Predictions']])
-    #     plt.legend(['train', 'Val', 'Predictions'], loc='upper left')
-    #     st.set_option('deprecation.showPyplotGlobalUse', False)
-    #     st.pyplot()
-
-
-    #     st.markdown("<h1 style='text-align: center; color: #002966;'>Forecasting the Price Stocks</h1>", unsafe_allow_html=True)
-    #     st.write(""" 
-    #     Using keras Long Short Term Memory (LSTM) model that permit to store past information to predict the future price of stocks.
-    #     """)
-    #     st.write(predictions)
-    #     st.markdown("<h1 style='text-align: center; color: #002966;'>Root Mean Square Deviation</h1>", unsafe_allow_html=True)
-    #     st.write(""" 
-    #     The RMSE shows us how concentrated the data is around the line of best fit.
-    #     """)
-    #     rmse = np.sqrt(np.mean(predictions - y_test)**2)
-    #     st.write(rmse)
-
-
-#     #Second Model
-    # from sklearn.model_selection import train_test_split, GridSearchCV
-    # from sklearn.ensemble import RandomForestRegressor
-    # import matplotlib.pyplot as plt
-
-    # company_hist = st.sidebar.checkbox('Decision Tree Regression')
-
-    # forcast_days = 25
-    # tickerDf['Prediction'] = tickerDf[['Close']].shift(-forcast_days)
-
-    # # Feature Engineering: Create additional features like moving averages
-    # tickerDf['MA_5'] = tickerDf['Close'].rolling(window=5).mean()
-    # tickerDf['MA_10'] = tickerDf['Close'].rolling(window=10).mean()
-    # tickerDf.dropna(inplace=True)  # Drop NaN values after creating moving averages
-
-    # X = np.array(tickerDf.drop(['Prediction'], axis=1)[:-forcast_days].fillna(0))
-    # y = np.array(tickerDf['Prediction'])[:-forcast_days]
-
-    # # Train-Test Split    
-    # x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.25)
-
-    # # Model Selection: Using Random Forest Regressor instead of Decision Tree Regressor
-    # model = RandomForestRegressor(n_estimators=100)
-    # model.fit(x_train, y_train)
-
-    # # Prepare future data for prediction
-    # x_future = tickerDf.drop(['Prediction'], axis=1)[-forcast_days:]
-    # x_future = np.array(x_future)
-
-    # # Predict future prices
-    # tree_prediction = model.predict(x_future)
-
-    # # Visualize Predictions
-    # valid = tickerDf[X.shape[0]:]
-    # valid['Predictions'] = np.nan  # Initialize Predictions column with NaN values
-    # valid.iloc[-forcast_days:, valid.columns.get_loc('Predictions')] = tree_prediction  # Fill in predictions
-
-    # # Streamlit Visualization
-    # st.markdown("<h1 style='text-align: center; color: #002966;'>Random Forest Regression Model</h1>", unsafe_allow_html=True)
-    # st.line_chart(valid[['Close', 'Predictions']])
-
-
-    # if company_hist: 
-    #     forcast_days = 25
-    #     tickerDf['Prediction'] = tickerDf[['Close']].shift(-forcast_days)
-    #     X=np.array(tickerDf.drop(['Prediction'], 1)[:-forcast_days].fillna(0))
-    #     y=np.array(tickerDf['Prediction'])[:-forcast_days] 
-
-    #     # #Train Data    
-    #     x_train, x_test, y_train, y_test= train_test_split(X,y, test_size=0.25)
-    #     tree = DecisionTreeRegressor().fit(x_train, y_train)
-    #     # x_future = tickerDf.drop(['Prediction'], 1)[:-forcast_days]
-    #     x_future = x_future.tail(forcast_days)
-    #     x_future = np.array(x_future)
-    #     tree_prediction = tree.predict(x_future)
-    #     st.markdown("<h1 style='text-align: center; color: #002966;'>Decision Tree Regression Model</h1>", unsafe_allow_html=True)
-
-    #     # #Graph 
-    #     predictions = tree_prediction
-    #     valid = tickerDf[X.shape[0]:]
-    #     valid['Predictions'] = predictions
-
-    #     plt.figure(figsize=(16,8))
-    #     plt.title('Model')
-    #     plt.xlabel('Days')
-    #     plt.ylabel('Close Price USD($)')
-    #     plt.plot(tickerDf['Close'])
-    #     plt.plot(valid[['Close', 'Predictions']])
-    #     plt.legend(['orig', 'Val', 'Pred'])
-    #     st.set_option('deprecation.showPyplotGlobalUse', False)
-    #     st.pyplot()
-    #     st.write('Prediction:', predictions) 
-    #     st.write('Accuracy:', tree.score(x_train, y_train))
-
-    #     tree_confidence = tree.score(x_test, y_test)
-        
-    #     st.write('Confidence:', tree_confidence)
-
-    # Third Model
-    # company_hist = st.sidebar.checkbox('Linear Regression')
-    
-    # if company_hist:     
-    #     st.markdown("<h1 style='text-align: center; color: #002966;'>Linea Regression Model</h1>", unsafe_allow_html=True)
-        
-    #     forcast_days = 25
-    #     tickerDf['Prediction'] = tickerDf[['Close']].shift(-forcast_days)
-    #     X = np.array(tickerDf.drop(['Prediction'], axis=1)[:-forcast_days].fillna(0))
-    #     y = np.array(tickerDf['Prediction'])[:-forcast_days]
-
-    #     # Prepare future data for prediction
-    #     x_future = tickerDf.drop(['Prediction'], axis=1).tail(forcast_days)
-    #     x_future = np.array(x_future)
-
-    #     # #Train Data    
-    #     x_train, x_test, y_train, y_test= train_test_split(X,y, test_size=0.25)
-    #     lr = LinearRegression().fit(x_train, y_train)
-    #     lr_prediction = lr.predict((x_future))
-    #     lr_confidence = lr.score(x_test, y_test)
-
-    #     #Prediction
-    #     predictions = lr_prediction
-    #     valid = tickerDf[X.shape[0]:]
-    #     valid['Predictions'] = predictions
-
-    #     plt.figure(figsize=(16,8))
-    #     plt.title('Model')
-    #     plt.xlabel('Days')
-    #     plt.ylabel('Close Price USD($)')
-    #     plt.plot(tickerDf['Close'])
-    #     plt.plot(valid[['Close', 'Predictions']])
-    #     plt.legend(['orig', 'Val', 'Pred'])
-    #     st.set_option('deprecation.showPyplotGlobalUse', False)
-
-    #     st.pyplot()
-    #     st.write('Predictioin by LR:', predictions)
-    #     st.write('Accuracy:', lr.score(x_train, y_train))
-    #     st.write('linear Regression confidence:', lr_confidence)
-
-    # st.markdown("<h1 style='text-align: center; color: #002966;'>Compared Forecasting</h1>", unsafe_allow_html=True)
-    # new_predict = tickerDf['Close']
-    # st.write(tickerDf)
-        
-
-
-
 def Stock():
     page_bg_img = """
     <style>
@@ -1648,7 +1358,6 @@ def Stock():
     tickerData = yf.Ticker(tickerSymbol2)
     tickerDf = tickerData.history(period='id', start=start, end=None)
 
-    company = yf.Ticker(tickerSymbol2)
     company = yf.Ticker(tickerSymbol2)
     st.write('Web:', company.info["website"])
     # st.write(company.info)
@@ -1710,6 +1419,7 @@ def Stock():
         data = yf.download((tickerSymbol2), start=start, end=None, group_by='tickers')
         st.table(data.describe())
 
+    #GRAPHIC
     # Set up the Streamlit app title
     st.title('Stock Price Analysis Dashboard')
 
@@ -1717,32 +1427,262 @@ def Stock():
     st.sidebar.header('User Input')
     ticker_input = st.sidebar.text_input('Enter Stock Ticker', value='AAPL')
 
-    # Fetch and display data based on user input
-    if ticker_input:
-        data = yf.download(ticker_input, start='2020-01-01', end='2024-01-01')
-        data['Daily Return'] = data['Adj Close'].pct_change()
-        data['30 Day MA'] = data['Adj Close'].rolling(window=30).mean()
-        data['100 Day MA'] = data['Adj Close'].rolling(window=100).mean()
+    # Date range selection
+    st.sidebar.subheader('Select Date Range')
+    default_start = date(2020, 1, 1)
+    default_end = date.today()
 
-        # Plotting the stock price and moving averages
+    start_date = st.sidebar.date_input('Start Date', value=default_start)
+    end_date = st.sidebar.date_input('End Date', value=default_end)
+
+    # Ensure end date is not before start date
+    if start_date > end_date:
+        st.sidebar.error('Error: End date must be after start date.')
+    else:
+        # Fetch and display data based on user input
+        if ticker_input:
+            data = yf.download(ticker_input, start=start_date, end=end_date)
+            
+            if not data.empty:
+                data['Daily Return'] = data['Adj Close'].pct_change()
+                data['30 Day MA'] = data['Adj Close'].rolling(window=30).mean()
+                data['100 Day MA'] = data['Adj Close'].rolling(window=100).mean()
+
+                # Plotting the stock price and moving averages
+                fig = go.Figure()
+                fig.add_trace(go.Scatter(x=data.index, y=data['Adj Close'], mode='lines', name='Adjusted Close'))
+                fig.add_trace(go.Scatter(x=data.index, y=data['30 Day MA'], mode='lines', name='30 Day MA'))
+                fig.add_trace(go.Scatter(x=data.index, y=data['100 Day MA'], mode='lines', name='100 Day MA'))
+
+                # Update layout of the figure
+                fig.update_layout(title=f'{ticker_input} Stock Price and Moving Averages',
+                                xaxis_title='Date',
+                                yaxis_title='Price (USD)',
+                                template='plotly_dark')
+
+                # Display the figure in Streamlit
+                st.plotly_chart(fig)
+
+                # Show daily returns histogram
+                st.subheader('Daily Returns Histogram')
+                st.bar_chart(data['Daily Return'].dropna())
+            else:
+                st.error(f"No data available for {ticker_input} in the selected date range.")  
+def Prediction():     #Differente models to predict the price.
+    import streamlit as st
+    import pandas as pd
+    import yfinance as yf 
+    import numpy as np
+    from sklearn.model_selection import train_test_split
+    import plotly.graph_objs as go
+    page_bg_img = '''
+    <style>
+    .stApp {
+    background-image: url("https://media.istockphoto.com/id/537619144/es/foto/abstracto-3d-blanco-interior-contempor%C3%A1neo.jpg?s=612x612&w=0&k=20&c=cLKwTsl0j69zHeIq9G4GH8_XinP1xC2eIAztcr7veB0=");
+    background-size: cover;
+    }
+    </style>
+    '''
+    st.markdown(page_bg_img, unsafe_allow_html=True)
+    st.title("Predicting Stock Prices")
+    st.markdown(
+    """ 
+    ***Decision Tree Regression:***
+
+    ***Single Tree***:      A decision tree is a single model that makes decisions based on a series of if-else conditions.
+    
+    ***Interpretability***: Decision trees are highly interpretable. You can visualize the decision-making process and understand the logic behind each prediction. 
+    
+    ***Overfitting***:      Decision trees can be prone to overfitting, especially when they become too complex. This means they might perform well on the training data but poorly on new, unseen data. 
+
+    ***Random Forest Regression***
+
+    ***Ensemble Method***:     Random Forest is an ensemble method that combines multiple decision trees. 
+    
+    ***Reduced Overfitting***: By averaging the predictions of multiple trees, Random Forest reduces the risk of overfitting. 
+    
+    ***Improved Accuracy:***   Random Forest often achieves higher accuracy than a single decision tree, especially on complex datasets. 
+    
+    ***Less Interpretable***:  While less interpretable than a single decision tree, Random Forest can still provide some insights into feature importance.  
+    """)
+    
+    symbols = 'https://raw.githubusercontent.com/Moly-malibu/AIApp/main/bxo_lmmS1.csv'
+    df = pd.read_csv(symbols)
+
+    ticker = st.sidebar.selectbox('List Stocks', (df))
+    company = yf.Ticker(ticker)
+    st.write('Web:', company.info["website"])
+    ticker1 = st.sidebar.text_input('Enter Stock Ticker', 'AAPL')
+    start_date = st.sidebar.date_input('Start Date')
+    end_date = st.sidebar.date_input('End Date')
+    
+    tickerDf = yf.download(ticker1, start=start_date, end=end_date)
+    company_hist = st.sidebar.checkbox('Random Forest Regressor')
+    if company_hist:
+        # Forecasting days
+        forecast_days = 25
+
+        # Feature Engineering: Create additional features like moving averages and lagged values
+        tickerDf['Prediction'] = tickerDf[['Close']].shift(-forecast_days)
+        tickerDf['MA_5'] = tickerDf['Close'].rolling(window=5).mean()
+        tickerDf['MA_10'] = tickerDf['Close'].rolling(window=10).mean()
+        tickerDf['Lag_1'] = tickerDf['Close'].shift(1)
+        tickerDf.dropna(inplace=True)  # Drop NaN values after creating moving averages
+
+        # Prepare features and target variable
+        X = np.array(tickerDf.drop(['Prediction'], axis=1)[:-forecast_days].fillna(0))
+        y = np.array(tickerDf['Prediction'])[:-forecast_days]
+
+        # Train-Test Split    
+        x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.25)
+
+        # Model Selection: Using Random Forest Regressor with GridSearchCV for hyperparameter tuning
+        rf_model = RandomForestRegressor()
+        param_grid = {
+            'n_estimators': [50, 100, 200],
+            'max_depth': [None, 10, 20],
+            'min_samples_split': [2, 5],
+        }
+        grid_search = GridSearchCV(rf_model, param_grid, cv=3)
+        grid_search.fit(x_train, y_train)
+
+        best_rf_model = grid_search.best_estimator_
+
+        # Predict future prices
+        x_future = tickerDf.drop(['Prediction'], axis=1)[-forecast_days:]
+        x_future = np.array(x_future)
+
+        rf_predictions = best_rf_model.predict(x_future)
+
+        # Visualize Predictions with Plotly
+        valid = tickerDf[X.shape[0]:]
+        valid['Predictions'] = np.nan  # Initialize Predictions column with NaN values
+        valid.iloc[-forecast_days:, valid.columns.get_loc('Predictions')] = rf_predictions
+
+        # Plotting with Plotly
         fig = go.Figure()
-        fig.add_trace(go.Scatter(x=data.index, y=data['Adj Close'], mode='lines', name='Adjusted Close'))
-        fig.add_trace(go.Scatter(x=data.index, y=data['30 Day MA'], mode='lines', name='30 Day MA'))
-        fig.add_trace(go.Scatter(x=data.index, y=data['100 Day MA'], mode='lines', name='100 Day MA'))
-
-        # Update layout of the figure
-        fig.update_layout(title=f'{ticker_input} Stock Price and Moving Averages',
+        fig.add_trace(go.Scatter(x=valid.index, y=valid['Close'], mode='lines', name='Actual Close', line=dict(color='blue')))
+        fig.add_trace(go.Scatter(x=valid.index[-forecast_days:], y=valid['Predictions'][-forecast_days:], mode='lines', name='Predicted Close', line=dict(color='red')))
+        fig.update_layout(title='Random Forest Regression Predictions',
                         xaxis_title='Date',
                         yaxis_title='Price (USD)',
                         template='plotly_dark')
-
-        # Display the figure in Streamlit
         st.plotly_chart(fig)
 
-        # Show daily returns histogram
-        st.subheader('Daily Returns Histogram')
-        st.bar_chart(data['Daily Return'].dropna())
-    
+        # Model Performance Metrics
+        mae_rf = mean_absolute_error(y_test, best_rf_model.predict(x_test))
+        r2_rf = r2_score(y_test, best_rf_model.predict(x_test))
+        st.write(f'Mean Absolute Error (Random Forest): {mae_rf:.2f}')
+        st.write(f'R-squared (Random Forest): {r2_rf:.2f}')
 
+     # Sidebar for user input
+    company_hist = st.sidebar.checkbox('Decision Tree Regression')
+    if company_hist:
+        # Decision Tree Regression Model
+        dt_model = DecisionTreeRegressor()
+        dt_model.fit(x_train, y_train)
+
+        # Predicting with Decision Tree Model
+        dt_predictions = dt_model.predict(x_future)
+
+        # Visualize Decision Tree Predictions with Plotly
+        valid['Decision Tree Predictions'] = np.nan  # Initialize Predictions column with NaN values
+        valid.iloc[-forecast_days:, valid.columns.get_loc('Decision Tree Predictions')] = dt_predictions
+
+        fig_dt = go.Figure()
+        fig_dt.add_trace(go.Scatter(x=valid.index, y=valid['Close'], mode='lines', name='Actual Close', line=dict(color='blue')))
+        fig_dt.add_trace(go.Scatter(x=valid.index[-forecast_days:], y=valid['Decision Tree Predictions'][-forecast_days:], mode='lines', name='DT Predicted Close', line=dict(color='green')))
+        fig_dt.update_layout(title='Decision Tree Regression Predictions',
+                            xaxis_title='Date',
+                            yaxis_title='Price (USD)',
+                            template='plotly_dark')
+        st.plotly_chart(fig_dt)
+
+        # Model Performance Metrics for Decision Tree
+        dt_mae = mean_absolute_error(y_test, dt_model.predict(x_test))
+        dt_r2 = r2_score(y_test, dt_model.predict(x_test))
+        st.write(f'Mean Absolute Error (Decision Tree): {dt_mae:.2f}')
+        st.write(f'R-squared (Decision Tree): {dt_r2:.2f}')
+   #####################################################################
+   #MODELO 3
+    from sklearn.model_selection import train_test_split
+    from sklearn.linear_model import LinearRegression
+    from sklearn.metrics import mean_squared_error
+
+    # Function to load data
+    @st.cache_data  # Cache the data to improve performance
+    def load_data(ticker, start, end):
+        df = yf.download(ticker, start=start, end=end)
+        df.fillna(method='ffill', inplace=True)  # Forward fill for NaN values
+        return df
+
+    # Streamlit app starts here
+    st.title("Stock Price Prediction App")
+    if st.button("Load Data"):
+        if ticker and start_date and end_date:
+            df = load_data(ticker, start_date, end_date)
+
+            # Display Data and Check Columns
+            st.write(f"Displaying data for {ticker} from {start_date} to {end_date}")
+            st.dataframe(df)
+
+            # Check available columns and ensure expected columns exist
+            required_columns = ['Open', 'High', 'Low', 'Volume']
+            if not all(col in df.columns for col in required_columns):
+                st.error(f"Missing one or more required columns: {required_columns}")
+            else:
+                # Feature Selection and Data Preprocessing
+                X = df[['Open', 'High', 'Low', 'Volume']]  # Features
+                y = df['Close']  # Target variable
+
+                # Reshape y to be 1-dimensional
+                y = y.values.ravel()
+
+                # Split Data and Train Model
+                X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+                model = LinearRegression()
+                model.fit(X_train, y_train) 
+
+                # Make Predictions and Evaluate Performance
+                y_pred = model.predict(X_test)
+                mse = mean_squared_error(y_test, y_pred)  
+                rmse = np.sqrt(mse)
+
+                # Display Evaluation Metrics
+                st.write("Mean Squared Error:", mse)
+                st.write("Root Mean Squared Error:", rmse)
+
+                # Create Plotly figure for interactive graph
+                fig = go.Figure()
+
+                # Add actual closing prices trace
+                fig.add_trace(
+                    go.Scatter(
+                        x=df.index[-len(y_test):],  # Use the last n rows corresponding to y_test size
+                        y=y_test,
+                        mode='lines+markers',
+                        name="Actual Closing Price"
+                    )
+                )
+
+                # Add predicted values trace
+                fig.add_trace(
+                    go.Scatter(
+                        x=df.index[-len(y_pred):],  # Use the last n rows corresponding to y_pred size
+                        y=y_pred,
+                        mode='lines+markers',
+                        name="Predicted Closing Price"
+                    )
+                )
+
+                # Update layout of the figure
+                fig.update_layout(title="Actual vs Predicted Closing Prices",
+                                xaxis_title="Date",
+                                yaxis_title="Price (USD)",
+                                legend_title="Legend")
+
+                # Display the figure in Streamlit app
+                st.plotly_chart(fig)
+  
 if __name__ == "__main__":
    main()
