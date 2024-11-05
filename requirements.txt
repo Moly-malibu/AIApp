@@ -12,6 +12,7 @@ yahoofinancials
 yahoo_fin 
 mpld3
 plotly.graph_objects
+plotly.graph_objs
 os
 yahoo_fin
 go
