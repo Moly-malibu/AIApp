@@ -58,8 +58,6 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.metrics import mean_absolute_error, r2_score
 from sklearn.preprocessing import OneHotEncoder
-
-import plotly.graph_objects as go
 import plotly.express as px
 
 
@@ -1639,9 +1637,6 @@ def Prediction():     #Differente models to predict the price.
     ***Conclusion:***
     
     Linear regression remains a cornerstone of statistical analysis due to its simplicity and interpretability. It provides insights into relationships between variables and assists in making informed predictions based on data. By adhering to its assumptions and understanding its applications, analysts can effectively leverage linear regression in their research and decision-making processes.
-        
-    
-    
     
     """)
     if st.button("Load Data"):
