@@ -1605,6 +1605,9 @@ def Prediction():     #Differente models to predict the price.
     from sklearn.model_selection import train_test_split
     from sklearn.linear_model import LinearRegression
     from sklearn.metrics import mean_squared_error
+    from sklearn.model_selection import train_test_split
+    import plotly.express as px
+    import plotly.graph_objects as go
 
     # Function to load data
     @st.cache_data  # Cache the data to improve performance
