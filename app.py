@@ -1683,6 +1683,7 @@ def Prediction():     #Differente models to predict the price.
 
                 # Display the figure in Streamlit app
                 st.plotly_chart(fig)
-  
+        
+    
 if __name__ == "__main__":
    main()
