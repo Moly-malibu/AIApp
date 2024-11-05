@@ -92,7 +92,6 @@ def main():
     st.sidebar.title("Companies Analysis")
     page = st.sidebar.selectbox("Select Menu", tuple(pages.keys()))
     pages[page]()
-
 def Home():
     def main():
         page_bg_img = '''
@@ -207,7 +206,6 @@ def Home():
 
     if __name__ == "__main__":
         main()
-
 title_temp = """
 	 <!-- CSS  -->
 	  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -1116,7 +1114,6 @@ def Index():
             
         else:
             st.write("No data available for the selected stocks.")
-# Portfolio
 def Portfolio():
     page_bg_img = '''
     <style>
